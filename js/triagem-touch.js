@@ -85,7 +85,8 @@
                 url: $scope.url + '/api/distribui?access_token=' + OAuth2.accessToken,
                 data: {
                     unidade: $scope.unidade,
-                    servico: $scope.servico
+                    servico: $scope.servico,
+                    prioridade: prioridade
                 },
                 error: function(xhr, textStatus) {
                     var response = $.parseJSON(xhr.responseText)
@@ -162,22 +163,18 @@
                 refresh_token: OAuth2.refreshToken
             }
             OAuth2.ajax(data, function() {
-                console.log('[REQUEST] token: ' + OAuth2.accessToken);
                 // auto refresh
                 OAuth2.listen();
             });
         },
 
         refresh: function() {
-            console.log('[REFRESH] atualizando o token');
             var data = {
                 grant_type: "refresh_token",
                 client_id: OAuth2.clientId,
                 refresh_token: OAuth2.refreshToken
             }
-            OAuth2.ajax(data, function() {
-                console.log('[REFRESH] novo token: ' + OAuth2.accessToken);
-            });
+            OAuth2.ajax(data);
         },
 
         listen: function() {
@@ -187,7 +184,6 @@
                 var now = new Date().getTime();
                 var diff = (now - OAuth2.startTime) / 1000;
                 var expires = OAuth2.expires - 120;
-                console.log('[LISTEN] tempo passado: ' + diff + '. Expira em: ' + expires);
                 if (diff >= expires) {
                     clearInterval(OAuth2.intervalId);
                     OAuth2.refresh();
