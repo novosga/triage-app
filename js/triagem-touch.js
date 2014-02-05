@@ -60,12 +60,9 @@
             $scope.loadServicos();
             $scope.loadPrioridades();
             if ($scope.url && $scope.usuario && $scope.senha) {
-                OAuth2.request(
-                    $scope.url + '/api/token', 
-                    $scope.usuario, 
-                    $scope.senha, 
-                    'triagem'
-                );
+                OAuth2.url = $scope.url + '/api/token';
+                OAuth2.clientId = 'triagem';
+                OAuth2.request($scope.usuario, $scope.senha);
             }
         }
 
@@ -131,23 +128,24 @@
         accessToken: '',
         refreshToken: '',
         expires: null,
+        startTime: 0,
+        intervalId: 0,
+        url: '',
+        user: '',
+        pass: '',
+        clientId: '',
 
-        request: function(url, user, pass, clientId, fn) {
+        ajax: function(data, fn) {
             $.ajax({
-                url: url,
+                url: OAuth2.url,
                 type: 'post',
-                data: {
-                  grant_type: "password",
-                  username: user,
-                  password: pass,
-                  client_id: clientId
-                },
+                data: data,
                 success: function(response) {
                     OAuth2.accessToken = response.access_token;
-                    OAuth2.refreshToken = response.refresh_token;
                     OAuth2.expires = response.expires_in;
-                    // auto refresh
-                    OAuth2.listen();
+                    if (response.refresh_token) {
+                        OAuth2.refreshToken = response.refresh_token;
+                    }
                     if (typeof(fn) === 'function') {
                         fn(response);
                     }
@@ -155,12 +153,46 @@
             });
         },
 
-        refresh: function(fn) {
-            // TODO: ajax para atualizar o token
+        request: function(user, pass) {
+            var data = {
+                grant_type: "password",
+                username: user,
+                password: pass,
+                client_id: OAuth2.clientId,
+                refresh_token: OAuth2.refreshToken
+            }
+            OAuth2.ajax(data, function() {
+                console.log('[REQUEST] token: ' + OAuth2.accessToken);
+                // auto refresh
+                OAuth2.listen();
+            });
+        },
+
+        refresh: function() {
+            console.log('[REFRESH] atualizando o token');
+            var data = {
+                grant_type: "refresh_token",
+                client_id: OAuth2.clientId,
+                refresh_token: OAuth2.refreshToken
+            }
+            OAuth2.ajax(data, function() {
+                console.log('[REFRESH] novo token: ' + OAuth2.accessToken);
+            });
         },
 
         listen: function() {
-            // TODO: monitorar o tempo para atualizar o token automaticamente
+            clearInterval(OAuth2.intervalId);
+            OAuth2.startTime = new Date().getTime();
+            OAuth2.intervalId = setInterval(function() {
+                var now = new Date().getTime();
+                var diff = (now - OAuth2.startTime) / 1000;
+                var expires = OAuth2.expires - 120;
+                console.log('[LISTEN] tempo passado: ' + diff + '. Expira em: ' + expires);
+                if (diff >= expires) {
+                    clearInterval(OAuth2.intervalId);
+                    OAuth2.refresh();
+                }
+            }, 60 * 1000);
         }
     }
 
