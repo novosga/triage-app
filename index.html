@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html ng-app="TriagemTouch">
+    <head>
+        <meta charset="utf-8" />
+        <title>Triagem | Novo SGA</title>
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/style.css" />
+        <script type="text/javascript" src="js/angular.min.js"></script>
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+        <script src="js/html5shiv.js"></script>
+        <script src="js/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body ng-controller="TriagemCtrl">
+
+        <!-- menu retratil -->
+        <div id="menu">
+            <ul>
+                <li>
+                    <a href="#config" data-toggle="modal">
+                        <span class="glyphicon glyphicon-cog"></span>&nbsp;
+                        Configuração
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" ng-click="fullscreen()">
+                        <span class="glyphicon glyphicon-fullscreen"></span>&nbsp;
+                        Fullscreen
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div id="config" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Configuração</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form onsubmit="return false">
+                            <div class="form-group">
+                                <label for="url">URL</label>
+                                <input id="url" type="url" class="form-control" ng-model="url" ng-change="loadUnidades()">
+                            </div>
+                            <div class="form-group">
+                                <label for="unidade">Unidade</label>
+                                <select id="unidade" class="form-control" ng-model="unidade">
+                                    <option value="">Selecione</option>
+                                    <option value="{{u.id}}" ng-repeat="u in unidades" ng-selected="u.id == unidade">{{u.nome}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="username">Usuário</label>
+                                <input id="username" type="text" class="form-control" ng-model="usuario">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Senha</label>
+                                <input id="password" type="password" class="form-control" ng-model="senha">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                        <button id="config-save" type="button" class="btn btn-primary" ng-click="save()">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="layout">
+            <div id="header">
+                <h1>Triagem touch</h1>
+                <p>Escolha abaixo o serviço que deseja atendimento</p>
+            </div>
+            <!-- 
+                Lista dos serviços disponíveis
+            -->
+            <div id="servicos" class="page first">
+                <div class="col-lg-6" ng-repeat="servico in servicos">
+                    <div class="touch-control">
+                        <button class="btn btn-primary btn-lg btn-block" ng-click="tipoAtendimento(servico.id)">
+                            <span class="icon glyphicon glyphicon-circle-arrow-right"></span>
+                            {{servico.nome}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- 
+                Escolher entre convencional ou prioridade
+            -->
+            <div id="tipo-atendimento" class="page">
+                <div class="col-lg-6">
+                    <div class="touch-control convencional">
+                        <button class="btn btn-primary btn-lg btn-block" ng-click="distribuiNormal()">
+                            <span class="icon icon-left glyphicon glyphicon-print"></span>
+                            Convencional
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="touch-control prioridade">
+                        <button class="btn btn-danger btn-lg btn-block" ng-click="tipoPrioridade()">
+                            <span class="icon glyphicon glyphicon-circle-arrow-right"></span>
+                            Prioridade
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- 
+                Lista das prioridades disponíveis
+            -->
+            <div id="prioridades" class="page">
+                <div class="col-lg-6" ng-repeat="prioridade in prioridades">
+                    <div class="touch-control convencional">
+                        <button class="btn btn-danger btn-lg btn-block" ng-click="distribuiSenha(prioridade.id)">
+                            <span class="icon icon-left glyphicon glyphicon-print"></span>
+                            {{prioridade.nome}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/triagem-touch.js"></script>
+    </body>
+</html>

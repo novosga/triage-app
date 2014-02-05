@@ -1,0 +1,204 @@
+@font-face {
+    font-family: "Ubuntu";
+    src: url('../fonts/Ubuntu-R.ttf');
+}
+
+@font-face {
+    font-family: "Ubuntu";
+    src: url('../fonts/Ubuntu-B.ttf');
+    font-weight : bold;
+}
+
+@font-face  {
+    font-family: "Ubuntu";
+    src: url('../fonts/Ubuntu-RI.ttf');
+    font-style : italic;
+}
+
+@font-face {
+    font-family: "Ubuntu";
+    src: url('../fonts/Ubuntu-BI.ttf');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "UbuntuMono";
+    src: url('../fonts/UbuntuMono-R.ttf');
+}
+
+
+html, body { 
+    overflow: hidden;
+    font-family: Ubuntu;
+}
+
+html, body, #layout {
+    width: 100%;
+    height: 100%;
+}
+
+#layout {
+    top: 0;
+    left: 0;
+    background: #d9edf7;
+    position: fixed;
+}
+
+/* menu */
+#menu {
+    top: 10px;
+    right: 10px;
+    height: 50px;
+    padding: 0;
+    margin: 0;
+    background: #000;
+    position: fixed;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    box-shadow: 1px 1px 5px #333;
+    
+    z-index: 99999;
+}
+
+#menu ul {
+    padding: 0;
+    margin: 0;
+}
+
+#menu li {
+    list-style: none;
+    float: left;
+}
+
+#menu li a {
+    color: #aaa;
+    padding: 0 15px;
+    line-height: 50px;
+    text-decoration: none;
+    float: left;
+}
+
+#menu li a:hover { color: #fff; }
+
+.page {
+    display: none;
+}
+
+.page.first {
+    display: block;
+}
+
+#header, #header * {
+    padding: 0;
+    margin: 0;
+}
+
+#header h1 {
+    font-weight: bold;
+    text-align: center;
+}
+
+#header p {
+    text-align: center;
+}
+
+.touch-control button .icon { float: right; }
+.touch-control button .icon.icon-left { float: left; }
+
+@media only screen and (max-width: 800px) {
+    
+    #header {
+        padding: 5px;
+    }
+    
+    #header h1 {
+        font-size: 18px;
+    }
+    
+    #header p {
+        font-size: 12px;
+    }
+    
+    .touch-control  {
+        padding: 5px;
+    }
+
+    .touch-control  button {
+        padding: 10px;
+    }
+
+}
+
+@media only screen and (max-width: 1024px) and (min-width: 801px) {
+    
+    #header {
+        padding: 10px;
+    }
+    
+    #header h1 {
+        font-size: 20px;
+    }
+    
+    #header p {
+        font-size: 14px;
+    }
+    
+    .touch-control  {
+        padding: 10px;
+    }
+
+    .touch-control  button {
+        padding: 20px;
+    }
+
+}
+
+@media only screen and (max-width: 1280px) and (min-width: 1025px)  {
+    
+    #header {
+        padding: 20px;
+    }
+    
+    #header h1 {
+        font-size: 28px;
+    }
+    
+    #header p {
+        font-size: 14px;
+    }
+    
+    .touch-control  {
+        padding: 10px 0px;
+    }
+
+    .touch-control  button {
+        padding: 30px;
+    }
+
+}
+
+@media only screen and (min-width: 1281px)  {
+
+    #header {
+        padding: 20px;
+    }
+    
+    #header h1 {
+        font-size: 28px;
+    }
+    
+    #header p {
+        font-size: 14px;
+    }
+    
+    .touch-control  {
+        padding: 10px 0px;
+    }
+
+    .touch-control  button {
+        padding: 30px;
+    }
+
+}
