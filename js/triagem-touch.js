@@ -14,6 +14,7 @@
         $scope.usuario = Storage.get('usuario');
         $scope.senha = Storage.get('senha');
         $scope.clientId = Storage.get('clientId');
+        $scope.clientSecret = Storage.get('clientSecret');
         $scope.unidades = [];
         $scope.servicos = [];
         $scope.prioridades = [];
@@ -52,6 +53,7 @@
             Storage.set('usuario', $scope.usuario);
             Storage.set('senha', $scope.senha);
             Storage.set('clientId', $scope.clientId);
+            Storage.set('clientSecret', $scope.clientSecret);
             $scope.load();
             $('#config').modal('hide');
         }
@@ -67,11 +69,16 @@
                 OAuth2.refreshToken = Storage.get('refresh_token');
                 OAuth2.expireTime = Storage.get('expire_time');
                 OAuth2.clientId = $scope.clientId;
+                OAuth2.clientSecret = $scope.clientSecret;
                 $.ajax({
                     url: $scope.url + '/api/check?access_token=' + OAuth2.accessToken,
-                    success: function() {
-                        // monitora o token atual
-                        OAuth2.listen();
+                    success: function(response) {
+                        if (response.error) {
+                            $('#error').modal('show').find('.modal-body').html(response.error_description);
+                        } else {
+                            // monitora o token atual
+                            OAuth2.listen();
+                        }
                     },
                     error: function() {
                         // solicita um novo token
@@ -154,6 +161,7 @@
         user: '',
         pass: '',
         clientId: '',
+        clientSecret: '',
 
         ajax: function(data, fn) {
             $.ajax({
@@ -161,14 +169,18 @@
                 type: 'post',
                 data: data,
                 success: function(response) {
-                    OAuth2.accessToken = response.access_token;
-                    var now = new Date().getTime();
-                    OAuth2.expireTime = now + response.expires_in * 1000;
-                    if (response.refresh_token) {
-                        OAuth2.refreshToken = response.refresh_token;
-                    }
-                    if (typeof(fn) === 'function') {
-                        fn(response);
+                    if (response.error) {
+                        $('#error').modal('show').find('.modal-body').html(response.error_description);
+                    } else {
+                        OAuth2.accessToken = response.access_token;
+                        var now = new Date().getTime();
+                        OAuth2.expireTime = now + response.expires_in * 1000;
+                        if (response.refresh_token) {
+                            OAuth2.refreshToken = response.refresh_token;
+                        }
+                        if (typeof(fn) === 'function') {
+                            fn(response);
+                        }
                     }
                 }
             });
@@ -179,7 +191,8 @@
                 grant_type: "password",
                 username: user,
                 password: pass,
-                client_id: OAuth2.clientId
+                client_id: OAuth2.clientId,
+                client_secret: OAuth2.clientSecret
             }
             OAuth2.ajax(data, function() {
                 if (typeof(fn) === 'function') {
