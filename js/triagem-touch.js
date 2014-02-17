@@ -1,5 +1,5 @@
 /**
- * SGA TriagemTouch Web
+ * SGA TriagemTouch
  * @author rogeriolino
  */
 ;(function() {
@@ -27,7 +27,7 @@
                     $scope.unidades = data;
                 });
             }
-        }
+        };
 
         $scope.loadServicos = function() {
             if ($scope.url && $scope.unidade > 0) {
@@ -36,7 +36,7 @@
                     $scope.servicos = data;
                 });
             }
-        }
+        };
 
         $scope.loadPrioridades = function() {
             if ($scope.url) {
@@ -45,7 +45,7 @@
                     $scope.prioridades = data;
                 });
             }
-        }
+        };
 
         $scope.save = function() {
             Storage.set('url', $scope.url);
@@ -56,7 +56,7 @@
             Storage.set('clientSecret', $scope.clientSecret);
             $scope.load();
             $('#config').modal('hide');
-        }
+        };
 
         $scope.load = function() {
             $scope.loadUnidades();
@@ -90,20 +90,20 @@
                     }
                 });
             }
-        }
+        };
 
         $scope.tipoAtendimento = function(servico) {
             $scope.servico = servico;
             gotoPage('#tipo-atendimento');
-        }
+        };
 
         $scope.tipoPrioridade = function() {
             gotoPage('#prioridades');
-        }
+        };
 
         $scope.distribuiNormal = function() {
             $scope.distribuiSenha(1);
-        }
+        };
 
         $scope.distribuiSenha = function(prioridade) {
             $.ajax({
@@ -122,15 +122,14 @@
                     if (response.error) {
                         showError(response.error);
                     } else {
-                        // TODO imprimir
-                        showError(response.id + " - <strong>" + response.atendimento.numero + '</strong>');
+                        Impressao.imprimir(response.atendimento);
                     }
                 },
                 complete: function() {
                     gotoIndex();
                 }
             });
-        }
+        };
 
         $scope.fullscreen = function() {
             var elem = document.body;
@@ -146,7 +145,7 @@
             if (elem.msRequestFullScreen) {
                 elem.msRequestFullScreen();
             }
-        }
+        };
 
         $scope.load();
     });
@@ -193,7 +192,7 @@
                 password: pass,
                 client_id: OAuth2.clientId,
                 client_secret: OAuth2.clientSecret
-            }
+            };
             OAuth2.ajax(data, function() {
                 if (typeof(fn) === 'function') {
                     fn();
@@ -223,7 +222,7 @@
                 }
             }, 60 * 1000);
         }
-    }
+    };
 
     var Storage = {
 
@@ -257,15 +256,30 @@
         }
 
     };
+    
+    var Impressao = {
+        
+        iframeId: 'frame-impressao',
+        
+        imprimir: function(atendimento) {
+            var iframe = document.getElementById(this.iframeId);
+            iframe.src = "imprimir.html";
+            iframe.onload = function() {
+                var win = this.contentWindow;
+                win.postLoad(atendimento);
+            };
+        }
+        
+    };
 
     var showError = function(msg) {
         $('#error').modal('show').find('.modal-body').html('<p>' + msg + '</p>');
-    }
+    };
 
     var gotoIndex = function() {
         $('.page').hide();
         $('#servicos').show();
-    }
+    };
 
     var resetInterval = 0;
     var gotoPage = function(page) {
@@ -274,7 +288,7 @@
         clearInterval(resetInterval);
         // volta para a tela de serviços quando ocioso
         resetInterval = setTimeout(gotoIndex, 15 * 1000);
-    }
+    };
 
     // ocultando e adicionando animacao ao menu
     setTimeout(function() {
@@ -290,5 +304,11 @@
         });
     }, 3000);
 
+    $('#teste').click(function() {
+        Impressao.imprimir({
+            id: 2,
+            numero: 'A123',
+        });
+    });
 
 })();
