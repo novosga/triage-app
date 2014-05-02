@@ -167,7 +167,8 @@
                 url: OAuth2.url,
                 type: 'post',
                 data: data,
-                success: function(response) {
+                success: function(retdata) {
+					var response = $.parseJSON(retdata);
                     if (response.error) {
                         $('#error').modal('show').find('.modal-body').html(response.error_description);
                     } else {
