@@ -114,8 +114,8 @@
                     servico: $scope.servico,
                     prioridade: prioridade
                 },
-                error: function(xhr, textStatus) {
-                    var response = $.parseJSON(xhr.responseText)
+                error: function(xhr) {
+                    var response = $.parseJSON(xhr.responseText);
                     showError(response.error);
                 },
                 success: function(response) {
@@ -169,7 +169,7 @@
                 data: data,
                 success: function(response) {
                     if (response.error) {
-                        $('#error').modal('show').find('.modal-body').html(response.error_description);
+                        showError(response.error_description);
                     } else {
                         OAuth2.accessToken = response.access_token;
                         var now = new Date().getTime();
@@ -181,7 +181,11 @@
                             fn(response);
                         }
                     }
-                }
+                },
+                error: function(xhr) {
+                    var response = $.parseJSON(xhr.responseText);
+                    showError(response.error);
+                },
             });
         },
 
