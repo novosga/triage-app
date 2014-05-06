@@ -72,7 +72,8 @@
                 OAuth2.clientSecret = $scope.clientSecret;
                 $.ajax({
                     url: $scope.url + '/api/check?access_token=' + OAuth2.accessToken,
-                    success: function(response) {
+                    success: function(retdata) {
+					    var response = $.parseJSON(retdata);
                         if (response.error) {
                             $('#error').modal('show').find('.modal-body').html(response.error_description);
                         } else {
@@ -118,7 +119,8 @@
                     var response = $.parseJSON(xhr.responseText);
                     showError(response.error);
                 },
-                success: function(response) {
+                success: function(retdata) {
+					    var response = $.parseJSON(retdata);
                     if (response.error) {
                         showError(response.error);
                     } else {
@@ -167,7 +169,8 @@
                 url: OAuth2.url,
                 type: 'post',
                 data: data,
-                success: function(response) {
+                success: function(retdata) {
+					var response = $.parseJSON(retdata);
                     if (response.error) {
                         showError(response.error_description);
                     } else {
