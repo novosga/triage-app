@@ -172,8 +172,8 @@
                         showError(response.error_description);
                     } else {
                         OAuth2.accessToken = response.access_token;
-                        var now = new Date().getTime();
-                        OAuth2.expireTime = now + response.expires_in * 1000;
+                        var now = new Date().getTime() / 1000;
+                        OAuth2.expireTime = now + response.expires_in;
                         if (response.refresh_token) {
                             OAuth2.refreshToken = response.refresh_token;
                         }
@@ -218,8 +218,8 @@
         listen: function() {
             clearInterval(OAuth2.intervalId);
             OAuth2.intervalId = setInterval(function() {
-                // pega um token novo 2 minutos antes de expirar
-                var now = new Date().getTime() - 120 * 1000;
+                // pega um token novo 5 minutos antes de expirar
+                var now = new Date().getTime() / 1000 + 300;
                 if (now >= OAuth2.expireTime) {
                     clearInterval(OAuth2.intervalId);
                     OAuth2.refresh();
@@ -311,7 +311,7 @@
     $('#teste').click(function() {
         Impressao.imprimir({
             id: 2,
-            numero: 'A123',
+            numero: 'A123'
         });
     });
 
