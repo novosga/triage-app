@@ -70,6 +70,8 @@
                 OAuth2.expireTime = Storage.get('expire_time');
                 OAuth2.clientId = $scope.clientId;
                 OAuth2.clientSecret = $scope.clientSecret;
+                OAuth2.user = $scope.usuario;
+                OAuth2.pass = $scope.senha;                
                 $.ajax({
                     url: $scope.url + '/api/check?access_token=' + OAuth2.accessToken,
                     success: function(response) {
@@ -210,7 +212,10 @@
             var data = {
                 grant_type: "refresh_token",
                 client_id: OAuth2.clientId,
-                refresh_token: OAuth2.refreshToken
+                refresh_token: OAuth2.refreshToken,
+                client_secret: OAuth2.clientSecret,
+                username: OAuth2.user,
+                password: OAuth2.pass
             }
             OAuth2.ajax(data);
         },
@@ -221,7 +226,6 @@
                 // pega um token novo 5 minutos antes de expirar
                 var now = new Date().getTime() / 1000 + 300;
                 if (now >= OAuth2.expireTime) {
-                    clearInterval(OAuth2.intervalId);
                     OAuth2.refresh();
                 }
             }, 60 * 1000);
