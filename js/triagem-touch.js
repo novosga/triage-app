@@ -185,7 +185,7 @@
                 error: function(xhr) {
                     var response = $.parseJSON(xhr.responseText);
                     showError(response.error);
-                },
+                }
             });
         },
 
@@ -211,7 +211,7 @@
                 grant_type: "refresh_token",
                 client_id: OAuth2.clientId,
                 refresh_token: OAuth2.refreshToken
-            }
+            };
             OAuth2.ajax(data);
         },
 
@@ -221,7 +221,6 @@
                 // pega um token novo 5 minutos antes de expirar
                 var now = new Date().getTime() / 1000 + 300;
                 if (now >= OAuth2.expireTime) {
-                    clearInterval(OAuth2.intervalId);
                     OAuth2.refresh();
                 }
             }, 60 * 1000);
