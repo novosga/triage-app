@@ -70,6 +70,8 @@
                 OAuth2.expireTime = Storage.get('expire_time');
                 OAuth2.clientId = $scope.clientId;
                 OAuth2.clientSecret = $scope.clientSecret;
+                OAuth2.user = $scope.usuario;
+                OAuth2.pass = $scope.senha;	
                 $.ajax({
                     url: $scope.url + '/api/check?access_token=' + OAuth2.accessToken,
                     success: function(response) {
@@ -169,7 +171,15 @@
                 data: data,
                 success: function(response) {
                     if (response.error) {
-                        showError(response.error_description);
+                        if (response.error == 'invalid_grant') {						
+                            OAuth2.request(OAuth2.user, OAuth2.pass, function() {
+                                Storage.set('access_token', OAuth2.accessToken);
+                                Storage.set('refresh_token', OAuth2.refreshToken);
+                                Storage.set('expire_time', OAuth2.expireTime);
+                        });
+                        }else {
+                            showError(response.error_description);
+                        }
                     } else {
                         OAuth2.accessToken = response.access_token;
                         var now = new Date().getTime() / 1000;
