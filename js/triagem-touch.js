@@ -152,6 +152,7 @@
 
     var OAuth2 = {
 
+        debug: false,
         accessToken: '',
         refreshToken: '',
         expireTime: null,
@@ -161,6 +162,12 @@
         pass: '',
         clientId: '',
         clientSecret: '',
+        
+        console: function(data) {
+            if (OAuth2.debug) {
+                console.log("[OAuth2] " + JSON.stringify(data));
+            }
+        },
 
         ajax: function(data, fn) {
             $.ajax({
@@ -198,6 +205,7 @@
                 client_secret: OAuth2.clientSecret
             };
             OAuth2.ajax(data, function() {
+                OAuth2.console({ accessToken: OAuth2.accessToken, expireTime: OAuth2.expireTime, refreshToken: OAuth2.refreshToken });
                 if (typeof(fn) === 'function') {
                     fn();
                 }
@@ -212,14 +220,19 @@
                 client_id: OAuth2.clientId,
                 refresh_token: OAuth2.refreshToken
             };
-            OAuth2.ajax(data);
+            OAuth2.console("refresh!");
+            OAuth2.ajax(data, function() {
+                OAuth2.console({ accessToken: OAuth2.accessToken, expireTime: OAuth2.expireTime, refreshToken: OAuth2.refreshToken });
+            });
         },
 
         listen: function() {
+            OAuth2.console("listen!");
             clearInterval(OAuth2.intervalId);
             OAuth2.intervalId = setInterval(function() {
                 // pega um token novo 5 minutos antes de expirar
                 var now = new Date().getTime() / 1000 + 300;
+                OAuth2.console({ msg: "checking token: ", now: now, expireTime: OAuth2.expireTime });
                 if (now >= OAuth2.expireTime) {
                     OAuth2.refresh();
                 }
