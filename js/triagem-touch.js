@@ -171,7 +171,7 @@
                 data: data,
                 success: function(response) {
                     if (response.error) {
-                        if (response.error == 'invalid_grant') {						
+                        if (response.error_description == 'Refresh token has expired' ) {						
                             OAuth2.request(OAuth2.user, OAuth2.pass, function() {
                                 Storage.set('access_token', OAuth2.accessToken);
                                 Storage.set('refresh_token', OAuth2.refreshToken);
