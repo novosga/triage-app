@@ -220,6 +220,7 @@
             var data = {
                 grant_type: "refresh_token",
                 client_id: OAuth2.clientId,
+                client_secret: OAuth2.clientSecret,
                 refresh_token: OAuth2.refreshToken
             };
             OAuth2.ajax(data);
