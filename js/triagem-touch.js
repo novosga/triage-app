@@ -72,6 +72,7 @@
                 OAuth2.clientSecret = $scope.clientSecret;
                 $.ajax({
                     url: $scope.url + '/api/check?access_token=' + OAuth2.accessToken,
+		    dataType: 'json',
                     success: function(response) {
                         if (response.error) {
                             $('#error').modal('show').find('.modal-body').html(response.error_description);
@@ -108,6 +109,7 @@
         $scope.distribuiSenha = function(prioridade) {
             $.ajax({
                 type: 'post', 
+		dataType: 'json',
                 url: $scope.url + '/api/distribui?access_token=' + OAuth2.accessToken,
                 data: {
                     unidade: $scope.unidade,
