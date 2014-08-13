@@ -70,6 +70,8 @@
                 OAuth2.expireTime = Storage.get('expire_time');
                 OAuth2.clientId = $scope.clientId;
                 OAuth2.clientSecret = $scope.clientSecret;
+                OAuth2.user = $scope.usuario;
+                OAuth2.pass = $scope.senha;	
                 $.ajax({
                     url: $scope.url + '/api/check?access_token=' + OAuth2.accessToken,
 		    dataType: 'json',
@@ -178,7 +180,15 @@
                 data: data,
                 success: function(response) {
                     if (response.error) {
-                        showError(response.error_description);
+                            if (response.error_description == 'Refresh token has expired' || response.error_description == 'Invalid refresh token') {						
+                            OAuth2.request(OAuth2.user, OAuth2.pass, function() {
+                                Storage.set('access_token', OAuth2.accessToken);
+                                Storage.set('refresh_token', OAuth2.refreshToken);
+                                Storage.set('expire_time', OAuth2.expireTime);
+                        });
+                        }else {
+                            showError(response.error_description);
+                        }
                     } else {
                         OAuth2.accessToken = response.access_token;
                         var now = new Date().getTime() / 1000;
@@ -220,6 +230,7 @@
             var data = {
                 grant_type: "refresh_token",
                 client_id: OAuth2.clientId,
+                client_secret: OAuth2.clientSecret,
                 refresh_token: OAuth2.refreshToken
             };
             OAuth2.console("refresh!");
