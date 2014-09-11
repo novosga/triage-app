@@ -157,7 +157,7 @@
                 dataType: 'json',
                 success: function(response) {
                     if (response.error) {
-                        $('#error').modal('show').find('.modal-body').html(response.error_description);
+                        showError(response.error_description);
                     } else {
                         // monitora o token atual
                         OAuth2.listen();
