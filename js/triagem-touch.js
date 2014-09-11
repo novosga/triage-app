@@ -150,7 +150,7 @@
         
         check: function() {
             $.ajax({
-                url: OAuth2.url + '/api/check',
+                url: OAuth2.url + '/check',
                 data: {
                     access_token: OAuth2.accessToken
                 },
