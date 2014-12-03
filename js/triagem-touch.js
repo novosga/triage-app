@@ -122,7 +122,7 @@
                     if (response.error) {
                         showError(response.error);
                     } else {
-                        Impressao.imprimir(response.atendimento);
+                        Impressao.imprimir(response);
                     }
                 },
                 complete: function() {
