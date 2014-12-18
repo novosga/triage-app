@@ -270,10 +270,6 @@
         imprimir: function(atendimento) {
             var iframe = document.getElementById(this.iframeId);
             iframe.src = Storage.get('url') + '/print/' + atendimento.id + '/' + atendimento.hash;
-            iframe.onload = function() {
-                var win = this.contentWindow;
-                win.postLoad(atendimento);
-            };
         }
         
     };
