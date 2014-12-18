@@ -269,7 +269,7 @@
         
         imprimir: function(atendimento) {
             var iframe = document.getElementById(this.iframeId);
-            iframe.src = "imprimir.html";
+            iframe.src = Storage.get('url') + '/print/' + atendimento.id + '/' + atendimento.hash;
             iframe.onload = function() {
                 var win = this.contentWindow;
                 win.postLoad(atendimento);
@@ -309,12 +309,5 @@
             );
         });
     }, 3000);
-
-    $('#teste').click(function() {
-        Impressao.imprimir({
-            id: 2,
-            numero: 'A123'
-        });
-    });
 
 })();
