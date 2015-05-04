@@ -18,6 +18,10 @@
         $scope.unidades = [];
         $scope.servicos = [];
         $scope.prioridades = [];
+        
+        $scope.changeServico = function(servico) {
+            servico.hide = !servico.show;
+        };
 
         $scope.loadUnidades = function() {
             $scope.unidades = [];
@@ -34,6 +38,17 @@
                 $http({ method: 'GET', url: $scope.url + '/api/servicos/' + $scope.unidade }).
                 success(function(data) {
                     $scope.servicos = data;
+                    var desabilitados = JSON.parse(Storage.get('desabilitados') || '[]');
+                    for (var i = 0; i < $scope.servicos.length; i++) {
+                        var servico = $scope.servicos[i];
+                        servico.hide = false;
+                        for (var j = 0; j < desabilitados.length; j++) {
+                            if (servico.id === desabilitados[j]) {
+                                servico.hide = true;
+                            }
+                        }
+                        servico.show = !servico.hide;
+                    }
                 });
             }
         };
@@ -54,6 +69,15 @@
             Storage.set('senha', $scope.senha);
             Storage.set('clientId', $scope.clientId);
             Storage.set('clientSecret', $scope.clientSecret);
+            
+            var desabilitados = [];
+            for (var i = 0; i < $scope.servicos.length; i++) {
+                if ($scope.servicos[i].hide) {
+                    desabilitados.push($scope.servicos[i].id);
+                }
+            }
+            Storage.set('desabilitados', JSON.stringify(desabilitados));
+            
             $scope.load();
             $('#config').modal('hide');
         };
@@ -231,8 +255,11 @@
     };
 
     var Storage = {
+        
+        prefix: 'triagemtouch.',
 
         set: function(name, value) {
+            name = this.prefix + name;
             if (localStorage) {
                 localStorage.setItem(name, value);
             } else {
@@ -242,6 +269,7 @@
         },
                 
         get: function(name) {
+            name = this.prefix + name;
             if (localStorage) {
                 return localStorage.getItem(name);
             } else {

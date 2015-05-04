@@ -43,39 +43,62 @@
                 </div>
                 <div class="modal-body">
                     <form onsubmit="return false">
-                        <fieldset>
-                            <legend>Servidor</legend>
-                            <div class="form-group">
-                                <label for="url">URL</label>
-                                <input id="url" type="url" class="form-control" ng-model="url" ng-change="loadUnidades()">
+                        <div role="tabpanel">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active">
+                                    <a href="#tab-servidor" role="tab" data-toggle="tab">Servidor</a>
+                                </li>
+                                <li role="presentation">
+                                    <a href="#tab-servicos" role="tab" data-toggle="tab">Serviços</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="tab-servidor" class="tab-pane active">
+                                    <div class="form-group">
+                                        <label for="url">URL</label>
+                                        <input id="url" type="url" class="form-control" ng-model="url" ng-change="loadUnidades()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="unidade">Unidade</label>
+                                        <select id="unidade" class="form-control" ng-model="unidade">
+                                            <option value="">Selecione</option>
+                                            <option value="{{u.id}}" ng-repeat="u in unidades" ng-selected="u.id == unidade">{{u.nome}}</option>
+                                        </select>
+                                    </div>
+                                    <fieldset>
+                                        <legend>Acesso</legend>
+                                        <div class="form-group">
+                                            <label for="username">Usuário</label>
+                                            <input id="username" type="text" class="form-control" ng-model="usuario">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="password">Senha</label>
+                                            <input id="password" type="password" class="form-control" ng-model="senha">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="clientId">Client Id</label>
+                                            <input id="clientId" type="text" class="form-control" ng-model="clientId">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="clientSecret">Client Secret</label>
+                                            <input id="clientSecret" type="password" class="form-control" ng-model="clientSecret">
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div id="tab-servicos" class="tab-pane">
+                                    <div class="row exibir-servicos">
+                                        <div ng-repeat="servico in servicos">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" ng-change="changeServico(servico)" ng-model="servico.show"> {{ servico.nome }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="unidade">Unidade</label>
-                                <select id="unidade" class="form-control" ng-model="unidade">
-                                    <option value="">Selecione</option>
-                                    <option value="{{u.id}}" ng-repeat="u in unidades" ng-selected="u.id == unidade">{{u.nome}}</option>
-                                </select>
-                            </div>
-                        </fieldset>
-                        <fieldset>
-                            <legend>Acesso</legend>
-                            <div class="form-group">
-                                <label for="username">Usuário</label>
-                                <input id="username" type="text" class="form-control" ng-model="usuario">
-                            </div>
-                            <div class="form-group">
-                                <label for="password">Senha</label>
-                                <input id="password" type="password" class="form-control" ng-model="senha">
-                            </div>
-                            <div class="form-group">
-                                <label for="clientId">Client Id</label>
-                                <input id="clientId" type="text" class="form-control" ng-model="clientId">
-                            </div>
-                            <div class="form-group">
-                                <label for="clientSecret">Client Secret</label>
-                                <input id="clientSecret" type="password" class="form-control" ng-model="clientSecret">
-                            </div>
-                        </fieldset>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -109,7 +132,7 @@
             Lista dos serviços disponíveis
         -->
         <div id="servicos" class="page first">
-            <div class="col-lg-6" ng-repeat="servico in servicos">
+            <div class="col-lg-6" ng-repeat="servico in servicos" ng-hide="servico.hide">
                 <div class="touch-control">
                     <button class="btn btn-primary btn-lg btn-block" ng-click="tipoAtendimento(servico.id)">
                         <span class="icon glyphicon glyphicon-circle-arrow-right"></span>
