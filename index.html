@@ -2,7 +2,7 @@
 <html ng-app="TriagemTouch">
 <head>
     <meta charset="utf-8" />
-    <title>Triagem Touch | Novo SGA</title>
+    <title data-i18n="TriagemTouch.title">Triagem Touch | Novo SGA</title>
     <link rel="shortcut icon" href="images/favicon.png" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css" />
@@ -22,13 +22,13 @@
             <li>
                 <a href="#config" data-toggle="modal">
                     <span class="glyphicon glyphicon-cog"></span>&nbsp;
-                    Configuração
+                    <span data-i18n="TriagemTouch.configuration">Configuração</span>
                 </a>
             </li>
             <li>
                 <a href="javascript:void(0)" ng-click="fullscreen()">
                     <span class="glyphicon glyphicon-fullscreen"></span>&nbsp;
-                    Fullscreen
+                    <span data-i18n="TriagemTouch.fullscreen">Fullscreen</span>
                 </a>
             </li>
         </ul>
@@ -39,7 +39,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Configuração</h4>
+                    <h4 class="modal-title" data-i18n="TriagemTouch.configuration">Configuração</h4>
                 </div>
                 <div class="modal-body">
                     <form onsubmit="return false">
@@ -47,41 +47,52 @@
                             <!-- Nav tabs -->
                             <ul class="nav nav-tabs" role="tablist">
                                 <li role="presentation" class="active">
-                                    <a href="#tab-servidor" role="tab" data-toggle="tab">Servidor</a>
+                                    <a href="#tab-servidor" role="tab" data-toggle="tab" data-i18n="TriagemTouch.server">Servidor</a>
                                 </li>
                                 <li role="presentation">
-                                    <a href="#tab-servicos" role="tab" data-toggle="tab">Serviços</a>
+                                    <a href="#tab-servicos" role="tab" data-toggle="tab" data-i18n="TriagemTouch.services">Serviços</a>
                                 </li>
                             </ul>
                             <div class="tab-content">
                                 <div id="tab-servidor" class="tab-pane active">
+									<!--
+									<div class="form-group">
+										<label for="idioma" data-i18n="TriagemTouch.language">Idioma</label>
+										<select id="idioma" class="form-control" ng-model="config.lang" ng-change="changeLang()" ng-selected="config.lang">
+											<option value="pt-BR">Português (Brasil)</option>
+											<option value="pt-PT">Português (Portugal)</option>
+											<option value="en-US">English (United States)</option>
+											<option value="es-ES">Español (España)</option>
+										</select>
+									</div>
+									-->
                                     <div class="form-group">
-                                        <label for="url">URL</label>
+                                        <label for="url" data-i18n="TriagemTouch.url">URL</label>
                                         <input id="url" type="url" class="form-control" ng-model="url" ng-change="loadUnidades()">
                                     </div>
                                     <div class="form-group">
-                                        <label for="unidade">Unidade</label>
+                                        <label for="unidade" data-i18n="TriagemTouch.unit">Unidade</label>
                                         <select id="unidade" class="form-control" ng-model="unidade">
-                                            <option value="">Selecione</option>
+                                            <option value="" data-i18n="TriagemTouch.select">Selecione</option>
                                             <option value="{{u.id}}" ng-repeat="u in unidades" ng-selected="u.id == unidade">{{u.nome}}</option>
                                         </select>
                                     </div>
                                     <fieldset>
-                                        <legend>Acesso</legend>
+                                        <legend data-i18n="TriagemTouch.access">Acesso</legend>
                                         <div class="form-group">
-                                            <label for="username">Usuário</label>
+                                            <label for="username" data-i18n="TriagemTouch.user">Usuário</label>
                                             <input id="username" type="text" class="form-control" ng-model="usuario">
                                         </div>
                                         <div class="form-group">
-                                            <label for="password">Senha</label>
+                                            <label for="password" data-i18n="TriagemTouch.password">Senha</label>
                                             <input id="password" type="password" class="form-control" ng-model="senha">
                                         </div>
                                         <div class="form-group">
-                                            <label for="clientId">Client Id</label>
+                                            <label for="clientId" data-i18n="TriagemTouch.clientid">Client Id</label>
                                             <input id="clientId" type="text" class="form-control" ng-model="clientId">
                                         </div>
                                         <div class="form-group">
-                                            <label for="clientSecret">Client Secret</label>
+                                            <label for="clientSecret" data-i18n="TriagemTouch.clientsecret">Client Secret</label>
                                             <input id="clientSecret" type="password" class="form-control" ng-model="clientSecret">
                                         </div>
                                     </fieldset>
@@ -102,8 +113,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
-                    <button id="config-save" type="button" class="btn btn-primary" ng-click="save()">Salvar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" data-i18n="TriagemTouch.close">Fechar</button>
+                    <button id="config-save" type="button" class="btn btn-primary" ng-click="save()" data-i18n="TriagemTouch.save">Salvar</button>
                 </div>
             </div>
         </div>
@@ -114,7 +125,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Erro</h4>
+                    <h4 class="modal-title" data-i18n="TriagemTouch.error.title">Erro</h4>
                 </div>
                 <div class="modal-body">
 
@@ -125,8 +136,8 @@
 
     <div id="layout">
         <div id="header">
-            <h1>Triagem touch</h1>
-            <p>Escolha abaixo o serviço que deseja atendimento</p>
+            <h1 data-i18n="TriagemTouch.heading">Triagem touch</h1>
+            <p data-i18n="TriagemTouch.description">Escolha abaixo o serviço que deseja atendimento</p>
         </div>
         <!-- 
             Lista dos serviços disponíveis
@@ -149,7 +160,7 @@
                 <div class="touch-control convencional">
                     <button class="btn btn-primary btn-lg btn-block" ng-click="distribuiNormal()">
                         <span class="icon icon-left glyphicon glyphicon-print"></span>
-                        Convencional
+                        <span data-i18n="TriagemTouch.normal">Convencional</span>
                     </button>
                 </div>
             </div>
@@ -157,7 +168,7 @@
                 <div class="touch-control prioridade">
                     <button class="btn btn-danger btn-lg btn-block" ng-click="tipoPrioridade()">
                         <span class="icon glyphicon glyphicon-circle-arrow-right"></span>
-                        Prioridade
+                        <span data-i18n="TriagemTouch.priority">Prioridade</span>
                     </button>
                 </div>
             </div>
@@ -181,6 +192,7 @@
 
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/i18next.min.js"></script>
     <script type="text/javascript" src="js/triagem-touch.js"></script>
 </body>
 </html>

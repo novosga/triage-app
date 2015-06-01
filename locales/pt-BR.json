@@ -1,0 +1,28 @@
+{
+    "TriagemTouch": {
+        "title": "Triagem Touch | Novo SGA",
+        "configuration": "Configuração",
+        "fullscreen": "Fullscreen",
+        "server": "Servidor",
+        "services": "Serviços",
+        "url": "URL",
+        "unit": "Unidade",
+        "select": "Selecione",
+		"access": "Acesso",
+		"user": "Usuário",
+		"password": "Senha",
+		"clientid": "ID do cliente",
+		"clientsecret": "Senha do cliente",
+        "language": "Idioma",
+        "close" : "Fechar",
+        "save": "Salvar",
+        "heading": "Triagem touch",
+		"description": "Escolha abaixo o serviço que deseja atendimento",
+		"normal": "Convencional",
+        "priority": "Prioridade",
+        "error": {
+            "title": "Erro",
+            "invalid_url": "A URL informada não é válida. Favor tentar novamente."
+        }
+    }
+}
