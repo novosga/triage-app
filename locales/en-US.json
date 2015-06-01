@@ -1,0 +1,28 @@
+{
+    "TriagemTouch": {
+        "title": "Touch Triage | Novo SGA",
+        "configuration": "Configuration",
+        "fullscreen": "Fullscreen",
+        "server": "Server",
+        "services": "Services",
+        "url": "URL",
+        "unit": "Unit",
+        "select": "Select",
+		"access": "Access",
+		"user": "User",
+		"password": "Password",
+		"clientid": "Client ID",
+		"clientsecret": "Client Secret",
+        "language": "Language",
+        "close" : "Close",
+        "save": "Save",
+        "heading": "Touch Triage",
+		"description": "Select the service you need",
+        "normal": "Normal",
+        "priority": "Priority",
+        "error": {
+            "title": "Error",
+            "invalid_url": "A URL informada não é válida. Favor tentar novamente."
+        }
+    }
+}
