@@ -3,44 +3,50 @@
  * @author rogeriolino
  */
 ;(function() {
-    "use strict";
+    'use strict'
 
     var app = angular.module('TriagemTouch', []);
 
-    app.controller('TriagemCtrl', function($scope, $http) {
+    app.controller('TriagemCtrl', function($http) {
+        var ctrl = this;
 
-        $scope.url = Storage.get('url');
-        $scope.unidade = Storage.get('unidade');
-        $scope.usuario = Storage.get('usuario');
-        $scope.senha = Storage.get('senha');
-        $scope.clientId = Storage.get('clientId');
-        $scope.clientSecret = Storage.get('clientSecret');
-        $scope.unidades = [];
-        $scope.servicos = [];
-        $scope.prioridades = [];
+        ctrl.url = Storage.get('url');
+        ctrl.unidade = Storage.get('unidade');
+        ctrl.usuario = Storage.get('usuario');
+        ctrl.senha = Storage.get('senha');
+        ctrl.clientId = Storage.get('clientId');
+        ctrl.clientSecret = Storage.get('clientSecret');
+        ctrl.unidades = [];
+        ctrl.servicos = [];
+        ctrl.prioridades = [];
         
-        $scope.changeServico = function(servico) {
+        ctrl.changeServico = function(servico) {
             servico.hide = !servico.show;
         };
+        
+        ctrl.changeUnidade = function() {
+            ctrl.loadServicos();
+        };
 
-        $scope.loadUnidades = function() {
-            $scope.unidades = [];
-            if ($scope.url) {
-                $http({ method: 'GET', url: $scope.url + '/api/unidades' }).
+        ctrl.loadUnidades = function() {
+            ctrl.unidades = [];
+            if (ctrl.url) {
+                $http({ method: 'GET', url: ctrl.url + '/api/unidades' }).
                 success(function(data) {
-                    $scope.unidades = data;
+                    ctrl.unidades = data;
                 });
             }
         };
 
-        $scope.loadServicos = function() {
-            if ($scope.url && $scope.unidade > 0) {
-                $http({ method: 'GET', url: $scope.url + '/api/servicos/' + $scope.unidade }).
+        ctrl.loadServicos = function() {
+            if (ctrl.url && ctrl.unidade > 0) {
+                $http({ method: 'GET', url: ctrl.url + '/api/servicos/' + ctrl.unidade }).
                 success(function(data) {
-                    $scope.servicos = data;
+                    ctrl.servicos = data;
+                    var servicosHabilitados = [];
                     var desabilitados = JSON.parse(Storage.get('desabilitados') || '[]');
-                    for (var i = 0; i < $scope.servicos.length; i++) {
-                        var servico = $scope.servicos[i];
+                    for (var i = 0; i < ctrl.servicos.length; i++) {
+                        var servico = ctrl.servicos[i];
                         servico.hide = false;
                         for (var j = 0; j < desabilitados.length; j++) {
                             if (servico.id === desabilitados[j]) {
@@ -48,79 +54,114 @@
                             }
                         }
                         servico.show = !servico.hide;
+                        if (servico.show) {
+                            servicosHabilitados.push(servico);
+                        }
                     }
+                    ctrl.paginator = new Paginator(servicosHabilitados, ctrl.interface.pageSize);
                 });
             }
         };
 
-        $scope.loadPrioridades = function() {
-            if ($scope.url) {
-                $http({ method: 'GET', url: $scope.url + '/api/prioridades' }).
+        ctrl.loadPrioridades = function() {
+            if (ctrl.url) {
+                $http({ method: 'GET', url: ctrl.url + '/api/prioridades' }).
                 success(function(data) {
-                    $scope.prioridades = data;
+                    ctrl.prioridades = data;
                 });
             }
         };
 
-        $scope.save = function() {
-            Storage.set('url', $scope.url);
-            Storage.set('unidade', $scope.unidade);
-            Storage.set('usuario', $scope.usuario);
-            Storage.set('senha', $scope.senha);
-            Storage.set('clientId', $scope.clientId);
-            Storage.set('clientSecret', $scope.clientSecret);
+        ctrl.save = function() {
+            Storage.set('url', ctrl.url);
+            Storage.set('unidade', ctrl.unidade);
+            Storage.set('usuario', ctrl.usuario);
+            Storage.set('senha', ctrl.senha);
+            Storage.set('clientId', ctrl.clientId);
+            Storage.set('clientSecret', ctrl.clientSecret);
+            
+            Storage.set('interface.title', ctrl.interface.title);
+            Storage.set('interface.subtitle', ctrl.interface.subtitle);
+            Storage.set('interface.columns', ctrl.interface.columns);
+            Storage.set('interface.pageSize', ctrl.interface.pageSize);
+            Storage.set('interface.blocked', ctrl.interface.blocked ? '1' : '0');
+            Storage.set('interface.unblockKey', ctrl.interface.unblockKey);
             
             var desabilitados = [];
-            for (var i = 0; i < $scope.servicos.length; i++) {
-                if ($scope.servicos[i].hide) {
-                    desabilitados.push($scope.servicos[i].id);
+            for (var i = 0; i < ctrl.servicos.length; i++) {
+                if (ctrl.servicos[i].hide) {
+                    desabilitados.push(ctrl.servicos[i].id);
                 }
             }
             Storage.set('desabilitados', JSON.stringify(desabilitados));
             
-            $scope.load();
+            ctrl.load();
             $('#config').modal('hide');
+            
+            blockedMenu = ctrl.interface.blocked;
+            unblockKey = ctrl.interface.unblockKey;
         };
 
-        $scope.load = function() {
-            $scope.loadUnidades();
-            $scope.loadServicos();
-            $scope.loadPrioridades();
-            if ($scope.url && $scope.usuario && $scope.senha && $scope.clientId) {
+        ctrl.load = function() {
+            ctrl.loadUnidades();
+            ctrl.loadServicos();
+            ctrl.loadPrioridades();
+            ctrl.inicio();
+            
+            ctrl.interface = {
+                title: Storage.get('interface.title') || 'Triagem touch',
+                subtitle: Storage.get('interface.subtitle') || 'Escolha abaixo o serviço que deseja atendimento',
+                columns: Storage.get('interface.columns') || '2',
+                pageSize: Storage.get('interface.pageSize') || '12',
+                blocked: Storage.get('interface.blocked') === '1',
+                unblockKey: Storage.get('interface.unblockKey'),
+            };
+            
+            if (ctrl.url && ctrl.usuario && ctrl.senha && ctrl.clientId) {
                 // primeiro verifica se ja possui um token valido para evitar criar token atoa
-                OAuth2.url = $scope.url + '/api';
+                OAuth2.url = ctrl.url + '/api';
                 OAuth2.accessToken = Storage.get('access_token');
                 OAuth2.refreshToken = Storage.get('refresh_token');
                 OAuth2.expireTime = Storage.get('expire_time');
-                OAuth2.clientId = $scope.clientId;
-                OAuth2.clientSecret = $scope.clientSecret;
-                OAuth2.user = $scope.usuario;
-                OAuth2.pass = $scope.senha;
+                OAuth2.clientId = ctrl.clientId;
+                OAuth2.clientSecret = ctrl.clientSecret;
+                OAuth2.user = ctrl.usuario;
+                OAuth2.pass = ctrl.senha;
                 OAuth2.check();
+            }
+            
+            blockedMenu = ctrl.interface.blocked;
+            unblockKey = ctrl.interface.unblockKey;
+        };
+
+        ctrl.inicio = function() {
+            gotoPage('#servicos');
+            if (ctrl.paginator) {
+                ctrl.paginator.goto(0);
             }
         };
 
-        $scope.tipoAtendimento = function(servico) {
-            $scope.servico = servico;
+        ctrl.tipoAtendimento = function(servico) {
+            ctrl.servico = servico;
             gotoPage('#tipo-atendimento');
         };
 
-        $scope.tipoPrioridade = function() {
+        ctrl.tipoPrioridade = function() {
             gotoPage('#prioridades');
         };
 
-        $scope.distribuiNormal = function() {
-            $scope.distribuiSenha(1);
+        ctrl.distribuiNormal = function() {
+            ctrl.distribuiSenha(1);
         };
 
-        $scope.distribuiSenha = function(prioridade) {
+        ctrl.distribuiSenha = function(prioridade) {
             $.ajax({
                 type: 'post', 
 		dataType: 'json',
-                url: $scope.url + '/api/distribui?access_token=' + OAuth2.accessToken,
+                url: ctrl.url + '/api/distribui?access_token=' + OAuth2.accessToken,
                 data: {
-                    unidade: $scope.unidade,
-                    servico: $scope.servico,
+                    unidade: ctrl.unidade,
+                    servico: ctrl.servico,
                     prioridade: prioridade
                 },
                 error: function(xhr) {
@@ -135,28 +176,21 @@
                     }
                 },
                 complete: function() {
-                    gotoIndex();
+                    gotoPage('#servicos');
                 }
             });
         };
 
-        $scope.fullscreen = function() {
-            var elem = document.body;
-            if (elem.requestFullScreen) {
-                elem.requestFullScreen();
-            }
-            if (elem.webkitRequestFullScreen) {
-                elem.webkitRequestFullScreen();
-            }
-            if (elem.mozRequestFullScreen) {
-                elem.mozRequestFullScreen();
-            }
-            if (elem.msRequestFullScreen) {
-                elem.msRequestFullScreen();
-            }
+        ctrl.itemStyleClass = function(index, items) {
+            var num = 12 / ctrl.interface.columns,
+                styleClass = {};
+            
+            styleClass['col-xs-' + num] = true;
+            
+            return styleClass;
         };
 
-        $scope.load();
+        ctrl.load();
     });
 
     var OAuth2 = {
@@ -291,6 +325,47 @@
 
     };
     
+    var Paginator = function(array, pageSize) {
+        var items = [];
+        
+        this.goto = function(pageIndex) {
+            if (pageIndex < 0 || pageIndex >= this.totalPages) {
+                return;
+            }
+            this.pageIndex = pageIndex;
+            items = [];
+            for (var i = this.pageSize * pageIndex, j = 0; j < this.pageSize && i < this.array.length; i++, j++) {
+                items.push(array[i]);
+            }
+        };
+        
+        this.next = function() {
+            this.goto(this.pageIndex + 1);
+        };
+        
+        this.hasNext = function() {
+            return this.totalPages > 0 && this.pageIndex < this.totalPages - 1;
+        };
+        
+        this.prev = function() {
+            this.goto(this.pageIndex - 1);
+        };
+        
+        this.hasPrev = function() {
+            return this.pageIndex > 0;
+        };
+        
+        this.items = function() {
+            return items;
+        };
+        
+        // init
+        this.array = array || [];
+        this.pageSize = pageSize || 12;
+        this.totalPages = Math.ceil(this.array.length / this.pageSize);
+        this.goto(0);
+    };
+    
     var Impressao = {
         
         iframeId: 'frame-impressao',
@@ -306,32 +381,75 @@
         $('#error').modal('show').find('.modal-body').html('<p>' + msg + '</p>');
     };
 
-    var gotoIndex = function() {
-        $('.page').hide();
-        $('#servicos').show();
+    var gotoPage = function(page) {
+        $('.page, .page-buttons .buttons').hide();
+        $(page + ', [data-target=' + page + ']').show();
+        clearInterval(resetInterval);
+        if (page !== '#servicos') {
+            // volta para a tela de serviços quando ocioso
+            resetInterval = setTimeout(function () {
+                gotoPage('#servicos');
+            }, 15 * 1000);
+        }
+    };
+    
+    var Menu = {
+        
+        config: function() {
+            $('#config').modal('show');
+        },
+    
+        fullscreen: function() {
+            var elem = document.body;
+            if (elem.requestFullScreen) {
+                elem.requestFullScreen();
+            }
+            if (elem.webkitRequestFullScreen) {
+                elem.webkitRequestFullScreen();
+            }
+            if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            }
+            if (elem.msRequestFullScreen) {
+                elem.msRequestFullScreen();
+            }
+        }
     };
 
-    var resetInterval = 0;
-    var gotoPage = function(page) {
-        $('.page').hide();
-        $(page).show();
-        clearInterval(resetInterval);
-        // volta para a tela de serviços quando ocioso
-        resetInterval = setTimeout(gotoIndex, 15 * 1000);
-    };
+    var resetInterval = 0,
+        blockedMenu = true,
+        unblockKey = 27,
+        menu = $('#menu');
+        
+    menu.find('[data-action]').on('click', function() {
+        if (blockedMenu) {
+            return;
+        }
+        var action = $(this).data('action');
+        Menu[action]();
+    });
 
     // ocultando e adicionando animacao ao menu
     setTimeout(function() {
-        $('#menu').fadeTo("slow", 0, function() {
-            $('#menu').hover(
+        menu.fadeTo("slow", 0, function() {
+            menu.hover(
                 function() {
-                    $('#menu').fadeTo("fast", 1);
+                    if (!blockedMenu) {
+                        menu.fadeTo("fast", 1);
+                    }
                 }, 
                 function() {
-                    $('#menu').fadeTo("slow", 0);
+                    menu.fadeTo("slow", 0);
                 }
             );
         });
     }, 3000);
+    
+    $(window).on('keydown', function(e) {
+        if (e.keyCode == unblockKey) {
+            blockedMenu = false;
+            alert('Menu desbloqueado');
+        }
+    });
 
 })();

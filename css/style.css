@@ -90,6 +90,13 @@ html, body, #layout {
     display: block;
 }
 
+.page-buttons {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    padding: 2em;
+}
+
 #header, #header * {
     padding: 0;
     margin: 0;
@@ -202,3 +209,5 @@ html, body, #layout {
     }
 
 }
+
+.tab-pane { padding: 20px 0; }

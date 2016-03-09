@@ -7,26 +7,26 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css" />
     <link rel="stylesheet" type="text/css" href="css/style.css" />
-    <script type="text/javascript" src="js/angular.min.js"></script>
+    <script type="text/javascript" src="js/angular.min.js?v=1.5.0"></script>
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="js/html5shiv.js"></script>
     <script src="js/respond.min.js"></script>
     <![endif]-->
 </head>
-<body ng-controller="TriagemCtrl">
+<body ng-controller="TriagemCtrl as ctrl">
 
     <!-- menu -->
     <div id="menu">
         <ul>
             <li>
-                <a href="#config" data-toggle="modal">
+                <a href="javascript:void(0)" data-action="config">
                     <span class="glyphicon glyphicon-cog"></span>&nbsp;
                     Configuração
                 </a>
             </li>
             <li>
-                <a href="javascript:void(0)" ng-click="fullscreen()">
+                <a href="javascript:void(0)" data-action="fullscreen">
                     <span class="glyphicon glyphicon-fullscreen"></span>&nbsp;
                     Fullscreen
                 </a>
@@ -52,49 +52,95 @@
                                 <li role="presentation">
                                     <a href="#tab-servicos" role="tab" data-toggle="tab">Serviços</a>
                                 </li>
+                                <li role="presentation">
+                                    <a href="#tab-interface" role="tab" data-toggle="tab">Interface</a>
+                                </li>
                             </ul>
                             <div class="tab-content">
                                 <div id="tab-servidor" class="tab-pane active">
                                     <div class="form-group">
                                         <label for="url">URL</label>
-                                        <input id="url" type="url" class="form-control" ng-model="url" ng-change="loadUnidades()">
+                                        <input id="url" type="url" class="form-control" ng-model="ctrl.url" ng-change="ctrl.loadUnidades()">
                                     </div>
                                     <div class="form-group">
                                         <label for="unidade">Unidade</label>
-                                        <select id="unidade" class="form-control" ng-model="unidade">
+                                        <select id="unidade" class="form-control" ng-model="ctrl.unidade" ng-change="ctrl.changeUnidade()">
                                             <option value="">Selecione</option>
-                                            <option value="{{u.id}}" ng-repeat="u in unidades" ng-selected="u.id == unidade">{{u.nome}}</option>
+                                            <option value="{{u.id}}" ng-repeat="u in ctrl.unidades" ng-selected="u.id == ctrl.unidade">{{u.nome}}</option>
                                         </select>
                                     </div>
                                     <fieldset>
                                         <legend>Acesso</legend>
                                         <div class="form-group">
                                             <label for="username">Usuário</label>
-                                            <input id="username" type="text" class="form-control" ng-model="usuario">
+                                            <input id="username" type="text" class="form-control" ng-model="ctrl.usuario">
                                         </div>
                                         <div class="form-group">
                                             <label for="password">Senha</label>
-                                            <input id="password" type="password" class="form-control" ng-model="senha">
+                                            <input id="password" type="password" class="form-control" ng-model="ctrl.senha">
                                         </div>
                                         <div class="form-group">
                                             <label for="clientId">Client Id</label>
-                                            <input id="clientId" type="text" class="form-control" ng-model="clientId">
+                                            <input id="clientId" type="text" class="form-control" ng-model="ctrl.clientId">
                                         </div>
                                         <div class="form-group">
                                             <label for="clientSecret">Client Secret</label>
-                                            <input id="clientSecret" type="password" class="form-control" ng-model="clientSecret">
+                                            <input id="clientSecret" type="password" class="form-control" ng-model="ctrl.clientSecret">
                                         </div>
                                     </fieldset>
                                 </div>
                                 <div id="tab-servicos" class="tab-pane">
-                                    <div class="row exibir-servicos">
-                                        <div ng-repeat="servico in servicos">
+                                    <div class="exibir-servicos">
+                                        <div ng-repeat="servico in ctrl.servicos">
                                             <div class="checkbox">
                                                 <label>
-                                                    <input type="checkbox" ng-change="changeServico(servico)" ng-model="servico.show"> {{ servico.nome }}
+                                                    <input type="checkbox" ng-change="ctrl.changeServico(servico)" ng-model="servico.show"> {{ servico.nome }}
                                                 </label>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                                <div id="tab-interface" class="tab-pane">
+                                    <div class="form-group">
+                                        <label for="interface-title">Título</label>
+                                        <input id="interface-title" type="text" class="form-control" ng-model="ctrl.interface.title">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="interface-subtitle">Subtítulo</label>
+                                        <input id="interface-subtitle" type="text" class="form-control" ng-model="ctrl.interface.subtitle">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <div class="form-group">
+                                                <label for="interface-columns">Colunas</label>
+                                                <select id="interface-columns" class="form-control" ng-model="ctrl.interface.columns">
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div class="form-group">
+                                                <label for="interface-pageSize">Itens por página</label>
+                                                <input id="interface-pageSize" type="text" class="form-control" ng-model="ctrl.interface.pageSize" ng-change="ctrl.loadServicos()">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" ng-model="ctrl.interface.blocked">
+                                            Bloquear menu
+                                        </label>
+                                    </div>
+                                    <div class="form-group" ng-show="ctrl.interface.blocked">
+                                        <label for="interface-pageSize">Tecla para desbloquear</label>
+                                        <select id="interface-columns" class="form-control" ng-model="ctrl.interface.unblockKey">
+                                            <option value="27">Esc</option>
+                                            <option value="17">Ctrl</option>
+                                            <option value="18">Alt</option>
+                                            <option value="81">Q</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -103,7 +149,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
-                    <button id="config-save" type="button" class="btn btn-primary" ng-click="save()">Salvar</button>
+                    <button id="config-save" type="button" class="btn btn-primary" ng-click="ctrl.save()">Salvar</button>
                 </div>
             </div>
         </div>
@@ -117,7 +163,7 @@
                     <h4 class="modal-title">Erro</h4>
                 </div>
                 <div class="modal-body">
-
+                    <!-- conteudo atualizado via js -->
                 </div>
             </div>
         </div>
@@ -125,16 +171,16 @@
 
     <div id="layout">
         <div id="header">
-            <h1>Triagem touch</h1>
-            <p>Escolha abaixo o serviço que deseja atendimento</p>
+            <h1>{{ctrl.interface.title}}</h1>
+            <p>{{ctrl.interface.subtitle}}</p>
         </div>
         <!-- 
             Lista dos serviços disponíveis
         -->
         <div id="servicos" class="page first">
-            <div class="col-lg-6" ng-repeat="servico in servicos" ng-hide="servico.hide">
+            <div ng-class="ctrl.itemStyleClass($index, ctrl.paginator.items())" ng-repeat="servico in ctrl.paginator.items()" ng-hide="servico.hide">
                 <div class="touch-control">
-                    <button class="btn btn-primary btn-lg btn-block" ng-click="tipoAtendimento(servico.id)">
+                    <button class="btn btn-primary btn-lg btn-block" ng-click="ctrl.tipoAtendimento(servico.id)">
                         <span class="icon glyphicon glyphicon-circle-arrow-right"></span>
                         {{servico.nome}}
                     </button>
@@ -145,17 +191,17 @@
             Escolher entre convencional ou prioridade
         -->
         <div id="tipo-atendimento" class="page">
-            <div class="col-lg-6">
+            <div class="col-xs-6">
                 <div class="touch-control convencional">
-                    <button class="btn btn-primary btn-lg btn-block" ng-click="distribuiNormal()">
+                    <button class="btn btn-primary btn-lg btn-block" ng-click="ctrl.distribuiNormal()">
                         <span class="icon icon-left glyphicon glyphicon-print"></span>
                         Convencional
                     </button>
                 </div>
             </div>
-            <div class="col-lg-6">
+            <div class="col-xs-6">
                 <div class="touch-control prioridade">
-                    <button class="btn btn-danger btn-lg btn-block" ng-click="tipoPrioridade()">
+                    <button class="btn btn-danger btn-lg btn-block" ng-click="ctrl.tipoPrioridade()">
                         <span class="icon glyphicon glyphicon-circle-arrow-right"></span>
                         Prioridade
                     </button>
@@ -166,13 +212,41 @@
             Lista das prioridades disponíveis
         -->
         <div id="prioridades" class="page">
-            <div class="col-lg-6" ng-repeat="prioridade in prioridades">
+            <div class="col-xs-6" ng-repeat="prioridade in ctrl.prioridades">
                 <div class="touch-control convencional">
-                    <button class="btn btn-danger btn-lg btn-block" ng-click="distribuiSenha(prioridade.id)">
+                    <button class="btn btn-danger btn-lg btn-block" ng-click="ctrl.distribuiSenha(prioridade.id)">
                         <span class="icon icon-left glyphicon glyphicon-print"></span>
                         {{prioridade.nome}}
                     </button>
                 </div>
+            </div>
+        </div>
+        
+        <div class="page-buttons">
+            <div data-target="#servicos" class="buttons">
+                <button class="btn btn-lg btn-default pull-left" ng-click="ctrl.paginator.prev()" ng-show="ctrl.paginator.hasPrev()">
+                    <span class="icon glyphicon glyphicon-chevron-left"></span>
+                    Página anterior
+                </button>
+
+                <button class="btn btn-lg btn-default pull-right" ng-click="ctrl.paginator.next()" ng-show="ctrl.paginator.hasNext()">
+                    Próxima página
+                    <span class="icon glyphicon glyphicon-chevron-right"></span>
+                </button>
+            </div>
+            
+            <div data-target="#tipo-atendimento" class="buttons">
+                <button class="btn btn-lg btn-default pull-left" ng-click="ctrl.inicio()">
+                    <span class="icon glyphicon glyphicon-chevron-left"></span>
+                    Voltar para serviços
+                </button>
+            </div>
+            
+            <div data-target="#prioridades" class="buttons">
+                <button class="btn btn-lg btn-default pull-left" ng-click="ctrl.inicio()">
+                    <span class="icon glyphicon glyphicon-chevron-left"></span>
+                    Voltar para serviços
+                </button>
             </div>
         </div>
     </div>
