@@ -211,3 +211,24 @@ html, body, #layout {
 }
 
 .tab-pane { padding: 20px 0; }
+
+.ticket {
+    width: 50%;
+    background: yellow;
+    margin: 0 auto;
+    padding: 2vw;
+    text-align: center;
+}
+
+.ticket .ticket-header {
+    font-size: 2vw;
+}
+
+.ticket .ticket-body {
+    font-weight: bold;
+    font-size: 10vw;
+}
+
+.ticket .ticket-footer {
+    font-size: 2vw;
+}

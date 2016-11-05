@@ -1,1 +1,3 @@
-nbproject/
+/nbproject/
+/layouts/*
+!/layouts/default.html

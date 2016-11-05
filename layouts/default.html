@@ -1,0 +1,96 @@
+<div id="header">
+    <h1>{{ctrl.interface.title}}</h1>
+    <p>{{ctrl.interface.subtitle}}</p>
+</div>
+<!-- 
+    Lista dos serviços disponíveis
+-->
+<div id="servicos" class="page first">
+    <div ng-class="ctrl.itemStyleClass($index, ctrl.paginator.items())" ng-repeat="servico in ctrl.paginator.items()" ng-hide="servico.hide">
+        <div class="touch-control">
+            <button class="btn btn-primary btn-lg btn-block" ng-click="ctrl.tipoAtendimento(servico.id)">
+                <span class="icon glyphicon glyphicon-circle-arrow-right"></span>
+                {{servico.nome}}
+            </button>
+        </div>
+    </div>
+</div>
+<!-- 
+    Escolher entre convencional ou prioridade
+-->
+<div id="tipo-atendimento" class="page">
+    <div class="col-xs-6">
+        <div class="touch-control convencional">
+            <button class="btn btn-primary btn-lg btn-block" ng-click="ctrl.distribuiNormal()">
+                <span class="icon icon-left glyphicon glyphicon-print"></span>
+                Convencional
+            </button>
+        </div>
+    </div>
+    <div class="col-xs-6">
+        <div class="touch-control prioridade">
+            <button class="btn btn-danger btn-lg btn-block" ng-click="ctrl.tipoPrioridade()">
+                <span class="icon glyphicon glyphicon-circle-arrow-right"></span>
+                Prioridade
+            </button>
+        </div>
+    </div>
+</div>
+<!-- 
+    Lista das prioridades disponíveis
+-->
+<div id="prioridades" class="page">
+    <div class="col-xs-6" ng-repeat="prioridade in ctrl.prioridades">
+        <div class="touch-control convencional">
+            <button class="btn btn-danger btn-lg btn-block" ng-click="ctrl.distribuiSenha(prioridade.id)">
+                <span class="icon icon-left glyphicon glyphicon-print"></span>
+                {{prioridade.nome}}
+            </button>
+        </div>
+    </div>
+</div>
+<!-- 
+    Aviso de senha sendo impressa
+-->
+<div id="printing" class="page">
+    <div class="ticket">
+        <div class="ticket-header">
+            <h1>Imprimindo</h1>
+            <p>Por favor aguarde a impressão da senha</p>
+        </div>
+        <div class="ticket-body">
+            {{ctrl.atendimento.senha}}
+        </div>
+        <div class="ticket-footer">
+            {{ctrl.atendimento.servico}}
+        </div>
+    </div>
+</div>
+
+<div class="page-buttons">
+    <div data-target="#servicos" class="buttons">
+        <button class="btn btn-lg btn-default pull-left" ng-click="ctrl.paginator.prev()" ng-show="ctrl.paginator.hasPrev()">
+            <span class="icon glyphicon glyphicon-chevron-left"></span>
+            Página anterior
+        </button>
+
+        <button class="btn btn-lg btn-default pull-right" ng-click="ctrl.paginator.next()" ng-show="ctrl.paginator.hasNext()">
+            Próxima página
+            <span class="icon glyphicon glyphicon-chevron-right"></span>
+        </button>
+    </div>
+    
+    <div data-target="#tipo-atendimento" class="buttons">
+        <button class="btn btn-lg btn-default pull-left" ng-click="ctrl.inicio()">
+            <span class="icon glyphicon glyphicon-chevron-left"></span>
+            Voltar para serviços
+        </button>
+    </div>
+    
+    <div data-target="#prioridades" class="buttons">
+        <button class="btn btn-lg btn-default pull-left" ng-click="ctrl.inicio()">
+            <span class="icon glyphicon glyphicon-chevron-left"></span>
+            Voltar para serviços
+        </button>
+    </div>
+</div>

@@ -19,6 +19,7 @@
         ctrl.unidades = [];
         ctrl.servicos = [];
         ctrl.prioridades = [];
+        ctrl.atendimento = {};
         
         ctrl.changeServico = function(servico) {
             servico.hide = !servico.show;
@@ -72,6 +73,10 @@
             }
         };
 
+        ctrl.layoutLoaded = function () {
+            ctrl.inicio();
+        };
+
         ctrl.save = function() {
             Storage.set('url', ctrl.url);
             Storage.set('unidade', ctrl.unidade);
@@ -80,12 +85,14 @@
             Storage.set('clientId', ctrl.clientId);
             Storage.set('clientSecret', ctrl.clientSecret);
             
+            Storage.set('interface.layout', ctrl.interface.layout);
             Storage.set('interface.title', ctrl.interface.title);
             Storage.set('interface.subtitle', ctrl.interface.subtitle);
             Storage.set('interface.columns', ctrl.interface.columns);
             Storage.set('interface.pageSize', ctrl.interface.pageSize);
             Storage.set('interface.blocked', ctrl.interface.blocked ? '1' : '0');
             Storage.set('interface.unblockKey', ctrl.interface.unblockKey);
+            Storage.set('interface.print', ctrl.interface.print ? '1' : '0');
             
             var desabilitados = [];
             for (var i = 0; i < ctrl.servicos.length; i++) {
@@ -106,15 +113,16 @@
             ctrl.loadUnidades();
             ctrl.loadServicos();
             ctrl.loadPrioridades();
-            ctrl.inicio();
             
             ctrl.interface = {
+                layout: Storage.get('interface.layout') || 'default.html',
                 title: Storage.get('interface.title') || 'Triagem touch',
                 subtitle: Storage.get('interface.subtitle') || 'Escolha abaixo o serviço que deseja atendimento',
                 columns: Storage.get('interface.columns') || '2',
                 pageSize: Storage.get('interface.pageSize') || '12',
                 blocked: Storage.get('interface.blocked') === '1',
                 unblockKey: Storage.get('interface.unblockKey'),
+                print: Storage.get('interface.print') === '1' || Storage.get('interface.print') === null,
             };
             
             if (ctrl.url && ctrl.usuario && ctrl.senha && ctrl.clientId) {
@@ -155,30 +163,38 @@
         };
 
         ctrl.distribuiSenha = function(prioridade) {
-            $.ajax({
-                type: 'post', 
-                dataType: 'json',
-                url: ctrl.url + '/api/distribui?access_token=' + OAuth2.accessToken,
-                data: {
+            var url = ctrl.url + '/api/distribui',
+                data = {
                     unidade: ctrl.unidade,
                     servico: ctrl.servico,
                     prioridade: prioridade
-                },
-                error: function(xhr) {
-                    var response = $.parseJSON(xhr.responseText);
-                    showError(response.error);
-                },
-                success: function(response) {
-                    if (response.error) {
-                        showError(response.error);
-                    } else {
-                        Impressao.imprimir(response);
-                    }
-                },
-                complete: function() {
-                    gotoPage('.page.first');
+                };
+
+            $http({
+                method: 'POST',
+                url: url,
+                data: $.param(data),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Bearer ' + OAuth2.accessToken,
                 }
-            });
+            }).then(
+                function (response) {
+                    if (response.data.error) {
+                        showError(response.data.error);
+                    } else {
+                        ctrl.atendimento = response.data;
+
+                        if (ctrl.interface.print) {
+                            Impressao.imprimir(ctrl.atendimento);
+                        }
+                    }
+                    gotoPage('#printing', 5);
+                }, 
+                function (response) {
+                    showError(response.data.error);
+                }
+            );
         };
 
         ctrl.itemStyleClass = function(index, items) {
@@ -381,7 +397,11 @@
         $('#error').modal('show').find('.modal-body').html('<p>' + msg + '</p>');
     };
 
-    var gotoPage = function(page) {
+    var gotoPage = function(page, waitTime) {
+        // default is 15 seconds to go back to start page
+        waitTime = waitTime || 15;
+
+        $('#error').modal('hide');
         $('.page, .page-buttons .buttons').hide();
         var $page = $(page).show();
         $("[data-target='#" + $page.attr('id') + "']").show();
@@ -390,7 +410,7 @@
             // volta para a tela inicial quando ocioso
             resetInterval = setTimeout(function () {
                 gotoPage('.page.first');
-            }, 15 * 1000);
+            }, waitTime * 1000);
         }
     };
     
