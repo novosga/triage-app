@@ -19,6 +19,7 @@
         ctrl.unidades = [];
         ctrl.servicos = [];
         ctrl.prioridades = [];
+        ctrl.cliente = {};
         ctrl.atendimento = {};
         
         ctrl.changeServico = function(servico) {
@@ -142,8 +143,29 @@
             unblockKey = ctrl.interface.unblockKey;
         };
 
+        ctrl.gotoPage = function(page, waitTime) {
+            // default is 15 seconds to go back to start page
+            waitTime = waitTime || 15;
+
+            $('#error').modal('hide');
+            $('.page, .page-buttons .buttons').hide();
+            var $page = $(page).show();
+            $("[data-target='#" + $page.attr('id') + "']").show();
+            
+            clearInterval(resetInterval);
+            if (!$page.hasClass('first')) {
+                // volta para a tela inicial quando ocioso
+                resetInterval = setTimeout(function () {
+                    ctrl.gotoPage('.page.first');
+                }, waitTime * 1000);
+            }
+        };
+
         ctrl.inicio = function() {
-            gotoPage('.page.first');
+            ctrl.atendimento = {};
+            ctrl.cliente = {};
+
+            ctrl.gotoPage('.page.first');
             if (ctrl.paginator) {
                 ctrl.paginator.goto(0);
             }
@@ -151,11 +173,11 @@
 
         ctrl.tipoAtendimento = function(servico) {
             ctrl.servico = servico;
-            gotoPage('#tipo-atendimento');
+            ctrl.gotoPage('#tipo-atendimento');
         };
 
         ctrl.tipoPrioridade = function() {
-            gotoPage('#prioridades');
+            ctrl.gotoPage('#prioridades');
         };
 
         ctrl.distribuiNormal = function() {
@@ -167,7 +189,9 @@
                 data = {
                     unidade: ctrl.unidade,
                     servico: ctrl.servico,
-                    prioridade: prioridade
+                    prioridade: prioridade,
+                    nome_cliente: ctrl.cliente.nome,
+                    doc_cliente: ctrl.cliente.documento,
                 };
 
             $http({
@@ -189,7 +213,7 @@
                             Impressao.imprimir(ctrl.atendimento);
                         }
                     }
-                    gotoPage('#printing', 5);
+                    ctrl.gotoPage('#printing', 5);
                 }, 
                 function (response) {
                     showError(response.data.error);
@@ -395,23 +419,6 @@
 
     var showError = function(msg) {
         $('#error').modal('show').find('.modal-body').html('<p>' + msg + '</p>');
-    };
-
-    var gotoPage = function(page, waitTime) {
-        // default is 15 seconds to go back to start page
-        waitTime = waitTime || 15;
-
-        $('#error').modal('hide');
-        $('.page, .page-buttons .buttons').hide();
-        var $page = $(page).show();
-        $("[data-target='#" + $page.attr('id') + "']").show();
-        clearInterval(resetInterval);
-        if (!$page.hasClass('first')) {
-            // volta para a tela inicial quando ocioso
-            resetInterval = setTimeout(function () {
-                gotoPage('.page.first');
-            }, waitTime * 1000);
-        }
     };
     
     var Menu = {
