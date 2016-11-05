@@ -135,7 +135,7 @@
         };
 
         ctrl.inicio = function() {
-            gotoPage('#servicos');
+            gotoPage('.page.first');
             if (ctrl.paginator) {
                 ctrl.paginator.goto(0);
             }
@@ -157,7 +157,7 @@
         ctrl.distribuiSenha = function(prioridade) {
             $.ajax({
                 type: 'post', 
-		dataType: 'json',
+                dataType: 'json',
                 url: ctrl.url + '/api/distribui?access_token=' + OAuth2.accessToken,
                 data: {
                     unidade: ctrl.unidade,
@@ -176,7 +176,7 @@
                     }
                 },
                 complete: function() {
-                    gotoPage('#servicos');
+                    gotoPage('.page.first');
                 }
             });
         };
@@ -383,12 +383,13 @@
 
     var gotoPage = function(page) {
         $('.page, .page-buttons .buttons').hide();
-        $(page + ', [data-target=' + page + ']').show();
+        var $page = $(page).show();
+        $("[data-target='#" + $page.attr('id') + "']").show();
         clearInterval(resetInterval);
-        if (page !== '#servicos') {
-            // volta para a tela de serviços quando ocioso
+        if (!$page.hasClass('first')) {
+            // volta para a tela inicial quando ocioso
             resetInterval = setTimeout(function () {
-                gotoPage('#servicos');
+                gotoPage('.page.first');
             }, 15 * 1000);
         }
     };
