@@ -11,5 +11,6 @@
 </script>
 
 <style>
-  /* CSS */
+  @import "~bulma/css/bulma.css";
+  @import "~font-awesome/css/font-awesome.min.css";
 </style>

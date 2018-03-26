@@ -1,21 +1,33 @@
 import Vue from 'vue'
-import axios from 'axios'
+import VueSwal from 'vue-swal'
 
 import App from './App'
-import router from './router'
 import store from './store'
-
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import router from './router'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
-Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
+
+Vue.use(VueSwal)
+
+Vue.filter('trans', (value) => {
+  return store.state.dict[value]
+})
 
 /* eslint-disable no-new */
 new Vue({
   components: { App },
   router,
   store,
-  template: '<App/>'
+  template: '<App/>',
+  beforeCreate () {
+    this.$store.dispatch('loadConfig')
+  },
+  mounted () {
+    if (this.$electron) {
+      this.$electron.ipcRenderer.on('navigate', (e, routePath) => {
+        this.$router.push(routePath)
+      })
+    }
+  }
 }).$mount('#app')

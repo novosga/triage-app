@@ -1,9 +1,14 @@
 {
-  "name": "triage",
-  "version": "0.0.0",
-  "author": "Rogerio Lino <rogeriolino@gmail.com>",
+  "name": "triagem-touch",
   "description": "Novo SGA triage client",
-  "license": null,
+  "license": "MIT",
+  "version": "2.0.0",
+  "homepage": "http://novosga.org",
+  "author": {
+    "name": "Rogerio Lino",
+    "email": "rogeriolino@gmail.com",
+    "url": "http://rogeriolino.com"
+  },
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
@@ -19,8 +24,8 @@
     "postinstall": "yarn run lint:fix"
   },
   "build": {
-    "productName": "triage",
-    "appId": "org.simulatedgreg.electron-vue",
+    "productName": "Triagem Touch",
+    "appId": "org.novosga.triagem-touch",
     "directories": {
       "output": "build"
     },
@@ -54,13 +59,15 @@
   },
   "dependencies": {
     "axios": "^0.16.1",
-    "bootstrap": "^4.0.0",
-    "jquery": "^3.3.1",
-    "popper.js": "^1.14.1",
+    "bulma": "^0.6.0",
+    "font-awesome": "^4.7.0",
+    "moment": "^2.18.1",
     "vue": "^2.3.3",
     "vue-electron": "^1.0.6",
     "vue-router": "^2.5.3",
-    "vuex": "^2.3.1"
+    "vue-swal": "0.0.6",
+    "vuex": "^2.3.1",
+    "vuex-i18n": "^1.7.0"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
@@ -96,6 +103,8 @@
     "html-webpack-plugin": "^2.30.1",
     "multispinner": "^0.2.1",
     "node-loader": "^0.6.0",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.9",
     "vue-html-loader": "^1.2.4",
