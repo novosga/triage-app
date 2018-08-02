@@ -1,6 +1,4 @@
-'use strict'
-
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, Menu } from 'electron'
 
 /**
  * Set `__static` path to static files in production
@@ -20,9 +18,7 @@ function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 563,
-    useContentSize: true,
-    width: 1000
+    useContentSize: true
   })
 
   mainWindow.loadURL(winURL)
@@ -30,6 +26,48 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+
+  mainWindow.maximize()
+
+  const template = [
+    {
+      label: 'View',
+      submenu: [
+        {
+          label: 'Settings',
+          click () {
+            if (mainWindow.webContents) {
+              mainWindow.webContents.send('navigate', '/settings')
+            }
+          }
+        },
+        {type: 'separator'},
+        {role: 'reload'},
+        {role: 'forcereload'},
+        {role: 'toggledevtools'},
+        {type: 'separator'},
+        {role: 'togglefullscreen'}
+      ]
+    },
+    {
+      role: 'window',
+      submenu: [
+        {role: 'minimize'},
+        {role: 'close'}
+      ]
+    },
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'About',
+          click () { require('electron').shell.openExternal('http://novosga.org') }
+        }
+      ]
+    }
+  ]
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
 }
 
 app.on('ready', createWindow)

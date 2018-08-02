@@ -322,7 +322,7 @@ aws4@^1.2.1, aws4@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.6.0.tgz#83ef5ca860b2b32e4a0deedee8c771b9db57471e"
 
-axios@^0.16.1:
+axios@^0.16.2:
   version "0.16.2"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.16.2.tgz#ba4f92f17167dfbab40983785454b9ac149c3c6d"
   dependencies:
@@ -7682,10 +7682,6 @@ vue-template-es2015-compiler@^1.6.0:
 vue@^2.3.3:
   version "2.5.16"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.5.16.tgz#07edb75e8412aaeed871ebafa99f4672584a0085"
-
-vuex-i18n@^1.7.0:
-  version "1.10.5"
-  resolved "https://registry.yarnpkg.com/vuex-i18n/-/vuex-i18n-1.10.5.tgz#635ea2204e0aa3f8fd512f0fab7f6b994d3f666c"
 
 vuex@^2.3.1:
   version "2.5.0"

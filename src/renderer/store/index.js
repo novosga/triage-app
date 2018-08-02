@@ -14,7 +14,7 @@ const state = {
   lastTicket: {}
 }
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   state,
   getters,
   actions,
@@ -22,3 +22,5 @@ export default new Vuex.Store({
   modules,
   strict: process.env.NODE_ENV !== 'production'
 })
+
+export default store

@@ -14,14 +14,14 @@
     <article v-if="page=='departments'">
       <header>
         <h1>
-          Departamentos
+          {{ 'home.departments.title'|trans }}
         </h1>
       </header>
       <section>
-        <p>Escolha o departamento aonde deseja atendimento</p>
+        <p>{{ 'home.departments.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
-          <div class="column is-6" v-for="department in departments" :key="department.id">
-            <button type="button" class="button is-xlarge is-block" @click="selectDepartment(department)">
+          <div :class="columnClasses()" v-for="department in departments" :key="department.id">
+            <button type="button" class="button is-primary is-xlarge is-block" @click="selectDepartment(department)">
               {{department.nome}}
             </button>
           </div>
@@ -36,14 +36,16 @@
     -->
     <article v-if="page=='department'">
       <header>
-        <h1>{{department.nome}}</h1>
+        <h1>
+          {{department.nome}}
+        </h1>
       </header>
       <section>
-        <p>Escolha o serviço desejado</p>
+        <p>{{ 'home.services.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
-          <div class="column is-6" v-for="service in services" :key="service.id">
-            <button type="button" class="button is-xlarge is-block" @click="selectService(service)">
-              {{service.nome}}
+          <div :class="columnClasses()" v-for="su in departmentServices" :key="su.servico.id">
+            <button type="button" class="button is-primary is-xlarge is-block" @click="selectService(su)">
+              {{su.servico.nome}}
             </button>
           </div>
         </div>
@@ -53,10 +55,10 @@
           <span class="icon is-small">
             <i class="fa fa-chevron-left"></i>
           </span>
-          <span>Voltar</span>
+          <span>{{ 'home.btn.back'|trans }}</span>
         </button>
 
-        <span class="tag is-info is-large is-pulled-right	" v-if="timer">
+        <span class="tag is-dark is-large is-pulled-right" v-if="timer">
           {{timer}}s
         </span>
       </footer>
@@ -67,12 +69,14 @@
     -->
     <article v-if="page=='allServices'">
       <header>
-        <h1>Serviços</h1>
+        <h1>
+          {{ 'home.services.title'|trans }}
+        </h1>
       </header>
       <section>
-        <p>Escolha o serviço desejado</p>
+        <p>{{ 'home.services.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
-          <div class="column is-6" v-for="su in enabledServices" :key="su.servico.id">
+          <div :class="columnClasses()" v-for="su in enabledServices" :key="su.servico.id">
             <button type="button" class="button is-primary is-xlarge is-block" @click="selectService(su)">
               {{su.servico.nome}}
             </button>
@@ -88,11 +92,13 @@
     -->
     <article v-if="page=='service'">
       <header>
-        <h1>{{servicoUnidade.servico.nome}}</h1>
+        <h1>
+          {{servicoUnidade.servico.nome}}
+        </h1>
       </header>
       <section>
         <div class="subservices" v-if="subservices.length">
-          <p>Atividades executadas pelo serviço escolhido</p>
+          <p>{{ 'home.service.subtitle'|trans }}</p>
           <ul class="columns is-multiline is-mobile">
             <li v-for="subservice in subservices" :key="subservice.id" class="column is-6">
               {{subservice.nome}}
@@ -102,12 +108,12 @@
         <div class="columns is-multiline is-mobile">
           <div class="column is-6">
             <button type="button" class="button is-info is-xlarge is-block" @click="ticket(null)">
-              Normal
+              {{ 'home.btn.normal'|trans }}
             </button>
           </div>
           <div class="column is-6">
             <button type="button" class="button is-danger is-xlarge is-block" @click="selectPriority">
-              Prioridade
+              {{ 'home.btn.priority'|trans }}
             </button>
           </div>
         </div>
@@ -117,10 +123,10 @@
           <span class="icon is-small">
             <i class="fa fa-chevron-left"></i>
           </span>
-          <span>Voltar</span>
+          <span>{{ 'home.btn.back'|trans }}</span>
         </button>
 
-        <span class="tag is-info is-large is-pulled-right	" v-if="timer">
+        <span class="tag is-dark is-large is-pulled-right" v-if="timer">
           {{timer}}s
         </span>
       </footer>
@@ -131,7 +137,9 @@
     -->
     <article v-if="page=='priorities'">
       <header>
-        <h1>{{servicoUnidade.servico.nome}}</h1>
+        <h1>
+          {{servicoUnidade.servico.nome}}
+        </h1>
       </header>
       <section>
         <div class="columns is-multiline is-mobile">
@@ -147,10 +155,10 @@
           <span class="icon is-small">
             <i class="fa fa-chevron-left"></i>
           </span>
-          <span>Voltar</span>
+          <span>{{ 'home.btn.back'|trans }}</span>
         </button>
 
-        <span class="tag is-info is-large is-pulled-right	" v-if="timer">
+        <span class="tag is-dark is-large is-pulled-right" v-if="timer">
           {{timer}}s
         </span>
       </footer>
@@ -162,11 +170,11 @@
     <article v-if="page=='printing'" class="printing">
       <header>
         <h1>
-          Imprimindo
+          {{ 'home.print.title'|trans }}
         </h1>
       </header>
       <section>
-        <p>Por favor aguarde a impressão da sua senha de atendimento</p>
+        <p>{{ 'home.print.subtitle'|trans }}</p>
         <div class="columns is-mobile is-centered" v-if="ticketInfo">
           <div class="column is-half is-narrow">
             <div class="tile is-child notification is-warning is-vertical">
@@ -182,10 +190,10 @@
           <span class="icon is-small">
             <i class="fa fa-chevron-left"></i>
           </span>
-          <span>Voltar</span>
+          <span>{{ 'home.btn.back'|trans }}</span>
         </button>
 
-        <span class="tag is-info is-large is-pulled-right	" v-if="timer">
+        <span class="tag is-dark is-large is-pulled-right" v-if="timer">
           {{timer}}s
         </span>
       </footer>
@@ -242,7 +250,7 @@
         servicoUnidade: null,
         department: null,
         departments: [],
-        services: [],
+        departmentServices: [],
         subservices: [],
         priorities: [],
         customer: {
@@ -251,7 +259,7 @@
         },
         ticketInfo: null,
         timer: null,
-        startTime: 15
+        startTime: null
       }
     },
     methods: {
@@ -267,15 +275,12 @@
         if (this.page !== this.firstPage) {
           if (this.timer === null) {
             this.timer = this.startTime
-            console.log('[timer] started')
           } else {
             this.timer--
-            console.log('[timer] tick')
           }
           if (this.timer <= 0) {
             this.timer = null
             this.page = this.firstPage
-            console.log('[timer] restart!')
           }
         }
       },
@@ -283,11 +288,18 @@
       selectDepartment (department) {
         this.page = 'department'
         this.department = department
+        this.departmentServices = this.enabledServices.filter(su => {
+          return su.departamento && su.departamento.id === department.id
+        })
       },
 
       selectService (su) {
-        this.page = 'service'
         this.servicoUnidade = su
+        if (this.priorities.length === 0) {
+          this.ticket(null)
+        } else {
+          this.page = 'service'
+        }
       },
 
       selectPriority () {
@@ -317,11 +329,30 @@
           const iframe = document.getElementById('frame-impressao')
           iframe.src = 'data:text/html;charset=utf-8,' + response
         })
+      },
+
+      columnClasses () {
+        let classes = [ 'column' ]
+        switch (this.$store.state.config.columns) {
+          case 1:
+            classes.push('is-12')
+            break
+          case 2:
+            classes.push('is-half')
+            break
+          case 3:
+            classes.push('is-one-third')
+            break
+        }
+
+        return classes.join(' ')
       }
     },
     beforeMount () {
       const store = this.$store
       const config = store.state.config
+
+      this.startTime = config.timer || 15
 
       if (!config || !config.server) {
         this.$router.push('/settings')
@@ -334,18 +365,35 @@
 
       store.dispatch('fetchServices', config.unity).then((services) => {
         this.enabledServices = []
-        for (var j = 0; j < config.services.length; j++) {
+        for (let j = 0; j < config.services.length; j++) {
           let id = config.services[j]
-          for (var i = 0; i < services.length; i++) {
+          for (let i = 0; i < services.length; i++) {
             let su = services[i]
             if (su.servico.id === id) {
               this.enabledServices.push(su)
+              if (su.departamento) {
+                let contains = false
+                for (let k = 0; k < this.departments.length; k++) {
+                  if (this.departments[k].id === su.departamento.id) {
+                    contains = true
+                    break
+                  }
+                }
+                if (!contains) {
+                  this.departments.push(su.departamento)
+                }
+              }
               break
             }
           }
         }
+
         if (this.enabledServices.length > 1) {
-          this.firstPage = 'allServices'
+          if (config.departments) {
+            this.firstPage = 'departments'
+          } else {
+            this.firstPage = 'allServices'
+          }
         } else {
           this.firstPage = 'service'
           this.servicoUnidade = this.enabledServices[0]

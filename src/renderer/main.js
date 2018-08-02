@@ -11,7 +11,7 @@ Vue.config.productionTip = false
 Vue.use(VueSwal)
 
 Vue.filter('trans', (value) => {
-  return store.state.dict[value]
+  return store.state.dict[value] || value
 })
 
 /* eslint-disable no-new */

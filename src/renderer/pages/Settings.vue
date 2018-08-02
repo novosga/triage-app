@@ -5,10 +5,13 @@
         <aside class="menu">
           <img src="static/images/logo.png">
 
+          <hr>
+
           <router-link to="/">
             <span class="icon">
               <i class="fa fa-chevron-left"></i>
-            </span> {{ 'menu.go_back'|trans }}
+            </span>
+            {{ 'menu.go_back'|trans }}
           </router-link>
 
           <p class="menu-label">
@@ -17,6 +20,11 @@
 
           <ul class="menu-list">
             <li>
+              <a @click="showTab('interface')">
+                {{ 'menu.interface'|trans }}
+              </a>
+            </li>
+            <li>
               <a @click="showTab('server')">
                 {{ 'menu.server'|trans }}
               </a>
@@ -24,6 +32,11 @@
             <li>
               <a @click="showTab('services')">
                 {{ 'menu.services'|trans }}
+              </a>
+            </li>
+            <li>
+              <a @click="showTab('sound')">
+                {{ 'menu.sound'|trans }}
               </a>
             </li>
           </ul>
@@ -38,6 +51,77 @@
             {{ 'settings.subtitle'|trans }}
           </h2>
         </div>
+
+        <hr>
+
+        <form @submit.prevent="save" v-if="tab==='interface'">
+          <div class="field">
+            <label class="label">
+              {{ 'settings.label.locale'|trans }}
+            </label>
+            <div class="control">
+              <div class="select">
+                <select v-model="config.locale">
+                  <option value="en">English</option>
+                  <option value="pt_BR">Português (Brasil)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">
+              {{ 'settings.label.columns'|trans }}
+            </label>
+            <div class="control">
+              <div class="select">
+                <select v-model="config.columns">
+                  <option :value="1">1</option>
+                  <option :value="2">2</option>
+                  <option :value="3">3</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">
+              {{ 'settings.label.timer'|trans }}
+            </label>
+            <div class="control">
+              <div class="select">
+                <select v-model="config.timer">
+                  <option :value="5">5s</option>
+                  <option :value="10">10s</option>
+                  <option :value="15">15s</option>
+                  <option :value="20">20s</option>
+                  <option :value="25">25s</option>
+                  <option :value="30">30s</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="control">
+              <label class="checkbox">
+                <input type="checkbox" v-model="config.departments" :value="true">
+                {{ 'settings.label.departments'|trans }}
+              </label>
+            </div>
+          </div>
+
+          <div class="control is-grouped">
+            <div class="control">
+              <button type="submit" class="button is-primary is-large">
+                {{ 'settings.btn.save'|trans }} &nbsp;
+                <span class="icon is-small">
+                  <i class="fa fa-save"></i>
+                </span>
+              </button>
+            </div>
+          </div>
+        </form>
 
         <form @submit.prevent="save" v-if="tab==='server'">
           <div class="field">
@@ -88,9 +172,7 @@
           <div class="control is-grouped">
             <div class="control">
               <button type="submit" class="button is-primary is-large">
-                <span>
-                  {{ 'settings.btn.save'|trans }}
-                </span>
+                {{ 'settings.btn.save'|trans }} &nbsp;
                 <span class="icon is-small">
                   <i class="fa fa-save"></i>
                 </span>
@@ -108,9 +190,7 @@
               <div class="select">
                 <select v-model="config.unity" @change="loadServices">
                   <option></option>
-                  <option
-                    v-for="unity in unities"
-                    :value="unity.id">
+                  <option v-for="unity in unities" :value="unity.id">
                     {{ unity.nome }}
                   </option>
                 </select>
@@ -136,9 +216,7 @@
           <div class="control is-grouped">
             <div class="control">
               <button type="submit" class="button is-primary is-large">
-                <span>
-                  {{ 'settings.btn.save'|trans }}
-                </span>
+                {{ 'settings.btn.save'|trans }} &nbsp;
                 <span class="icon is-small">
                   <i class="fa fa-save"></i>
                 </span>
@@ -152,103 +230,110 @@
 </template>
 
 <script>
-function load (ctx) {
-  ctx.config = JSON.parse(JSON.stringify(ctx.$store.state.config))
-  // defaults
-  ctx.config.services = ctx.config.services || []
+  function load (ctx) {
+    ctx.config = JSON.parse(JSON.stringify(ctx.$store.state.config))
+    // defaults
+    ctx.config.locale = ctx.config.locale || 'en'
+    ctx.config.columns = ctx.config.columns || 2
+    ctx.config.timer = ctx.config.timer || 10
+    ctx.config.departments = !!ctx.config.departments
+    ctx.config.services = ctx.config.services || []
 
-  if (ctx.fetchUnities) {
-    ctx.$store.dispatch('fetchUnities')
-      .then(() => {}, (error) => {
-        ctx.$swal('Oops!', error, 'error')
-      })
-    ctx.fetchUnities = false
+    if (ctx.fetchUnities && ctx.config.server) {
+      ctx.$store.dispatch('fetchUnities')
+        .then(() => {}, (error) => {
+          ctx.$swal('Oops!', error, 'error')
+        })
+      ctx.fetchUnities = false
+    }
+
+    if (ctx.fetchServices && ctx.config.unity) {
+      ctx.$store.dispatch('fetchServices', ctx.config.unity)
+      ctx.fetchServices = false
+    }
+
+    ctx.initialClientId = ctx.config.clientId
+    ctx.initialClientSecret = ctx.config.initialClientSecret
+    ctx.initialUsername = ctx.config.initialUsername
+    ctx.initialPassword = ctx.config.initialPassword
   }
 
-  if (ctx.fetchServices && ctx.config.unity) {
-    ctx.$store.dispatch('fetchServices', ctx.config.unity)
-    ctx.fetchServices = false
-  }
-
-  ctx.initialClientId = ctx.config.clientId
-  ctx.initialClientSecret = ctx.config.initialClientSecret
-  ctx.initialUsername = ctx.config.initialUsername
-  ctx.initialPassword = ctx.config.initialPassword
-}
-
-export default {
-  name: 'Settings',
-  data () {
-    return {
-      tab: 'server',
-      config: {},
-      initialClientId: null,
-      initialClientSecret: null,
-      initialUsername: null,
-      initialPassword: null,
-      fetchUnities: !this.unities,
-      fetchServices: !this.services
-    }
-  },
-  computed: {
-    unities () {
-      return this.$store.state.settings.unities
-    },
-    services () {
-      return this.$store.state.settings.services
-    },
-    isCredentialChanged () {
-      return (
-        this.initialClientId !== this.config.clientId ||
-        this.initialClientSecret !== this.config.initialClientSecret ||
-        this.initialUsername !== this.config.initialUsername ||
-        this.initialPassword !== this.config.initialPassword
-      )
-    }
-  },
-  methods: {
-    showTab (tab) {
-      this.tab = tab
-    },
-    changeServer () {
-      this.config.unity = null
-      this.fetchUnities = true
-      this.fetchServices = false
-    },
-    loadServices () {
-      this.$store.dispatch('fetchServices', this.config.unity)
-    },
-    save () {
-      this.$store.dispatch('saveConfig', this.config)
-
-      const token = (!this.$store.getters.isAuthenticated ||
-        this.$store.getters.isExpired ||
-        this.isCredentialChanged
-      )
-
-      let promise
-
-      if (token) {
-        promise = this.$store.dispatch('token')
-      } else {
-        promise = Promise.resolve()
+  export default {
+    name: 'Settings',
+    data () {
+      return {
+        tab: 'interface',
+        config: {},
+        initialClientId: null,
+        initialClientSecret: null,
+        initialUsername: null,
+        initialPassword: null,
+        fetchUnities: !this.unities,
+        fetchServices: !this.services
       }
+    },
+    computed: {
+      unities () {
+        return this.$store.state.settings.unities
+      },
+      services () {
+        return this.$store.state.settings.services
+      },
+      isCredentialChanged () {
+        return (
+          this.initialClientId !== this.config.clientId ||
+          this.initialClientSecret !== this.config.initialClientSecret ||
+          this.initialUsername !== this.config.initialUsername ||
+          this.initialPassword !== this.config.initialPassword
+        )
+      }
+    },
+    methods: {
+      showTab (tab) {
+        this.tab = tab
+      },
+      changeServer () {
+        this.config.unity = null
+        this.fetchUnities = true
+        this.fetchServices = false
+      },
+      loadServices () {
+        this.$store.dispatch('fetchServices', this.config.unity)
+      },
+      save () {
+        this.$store.dispatch('saveConfig', this.config)
 
-      promise.then(() => {
-        this.$swal('Success', 'Configuration Ok', 'success')
-        load(this)
-      }, error => {
-        this.$swal('Oops!', error, 'error')
-      })
+        const token = (!this.$store.getters.isAuthenticated ||
+          this.$store.getters.isExpired ||
+          this.isCredentialChanged
+        )
+
+        let promise
+
+        if (token) {
+          promise = this.$store.dispatch('token')
+        } else {
+          promise = Promise.resolve()
+        }
+
+        promise.then(() => {
+          this.$swal('Success', 'Configuration Ok', 'success')
+          load(this)
+        }, error => {
+          this.$swal('Oops!', error, 'error')
+        })
+      }
+    },
+    beforeMount () {
+      load(this)
     }
-  },
-  beforeMount () {
-    load(this)
   }
-}
 </script>
 
-<style lang="sass">
-  .columns .column
-    padding: 2rem
-</style>
+  <style lang="sass">
+    aside
+      img
+        height: 60px
+    .columns .column
+      padding: 2rem
+  </style>
