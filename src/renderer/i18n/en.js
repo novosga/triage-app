@@ -9,6 +9,7 @@ export default {
   'settings.title': 'Settings',
   'settings.subtitle': 'Panel settings',
   'settings.label.locale': 'Locale',
+  'settings.label.printer': 'Printer',
   'settings.label.columns': 'Columns',
   'settings.label.timer': 'Wait time',
   'settings.label.departments': 'Group by departments',

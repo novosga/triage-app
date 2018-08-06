@@ -20,23 +20,18 @@
 
           <ul class="menu-list">
             <li>
-              <a @click="showTab('interface')">
+              <a @click="showTab('interface')" :class="{'is-active': tab==='interface'}">
                 {{ 'menu.interface'|trans }}
               </a>
             </li>
             <li>
-              <a @click="showTab('server')">
+              <a @click="showTab('server')" :class="{'is-active': tab==='server'}">
                 {{ 'menu.server'|trans }}
               </a>
             </li>
             <li>
-              <a @click="showTab('services')">
+              <a @click="showTab('services')" :class="{'is-active': tab==='services'}">
                 {{ 'menu.services'|trans }}
-              </a>
-            </li>
-            <li>
-              <a @click="showTab('sound')">
-                {{ 'menu.sound'|trans }}
               </a>
             </li>
           </ul>
@@ -59,13 +54,34 @@
             <label class="label">
               {{ 'settings.label.locale'|trans }}
             </label>
-            <div class="control">
-              <div class="select">
+            <div class="control has-icons-left">
+              <span class="select">
                 <select v-model="config.locale">
                   <option value="en">English</option>
                   <option value="pt_BR">Português (Brasil)</option>
                 </select>
-              </div>
+              </span>
+              <span class="icon is-left">
+                <i class="fa fa-globe"></i>
+              </span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">
+              {{ 'settings.label.printer'|trans }}
+            </label>
+            <div class="control has-icons-left">
+              <span class="select">
+                <select v-model="config.printer">
+                  <option v-for="p in availablePrinters" :value="p.name" :key="p.name">
+                    {{p.name}}
+                  </option>
+                </select>
+              </span>
+              <span class="icon is-left">
+                <i class="fa fa-print"></i>
+              </span>
             </div>
           </div>
 
@@ -73,14 +89,17 @@
             <label class="label">
               {{ 'settings.label.columns'|trans }}
             </label>
-            <div class="control">
-              <div class="select">
+            <div class="control has-icons-left">
+              <span class="select">
                 <select v-model="config.columns">
                   <option :value="1">1</option>
                   <option :value="2">2</option>
                   <option :value="3">3</option>
                 </select>
-              </div>
+              </span>
+              <span class="icon is-left">
+                <i class="fa fa-columns"></i>
+              </span>
             </div>
           </div>
 
@@ -88,8 +107,8 @@
             <label class="label">
               {{ 'settings.label.timer'|trans }}
             </label>
-            <div class="control">
-              <div class="select">
+            <div class="control has-icons-left">
+              <span class="select">
                 <select v-model="config.timer">
                   <option :value="5">5s</option>
                   <option :value="10">10s</option>
@@ -98,7 +117,10 @@
                   <option :value="25">25s</option>
                   <option :value="30">30s</option>
                 </select>
-              </div>
+              </span>
+              <span class="icon is-left">
+                <i class="fa fa-clock-o"></i>
+              </span>
             </div>
           </div>
 
@@ -111,7 +133,9 @@
             </div>
           </div>
 
-          <div class="control is-grouped">
+          <hr>
+
+          <div class="field is-grouped is-grouped-right">
             <div class="control">
               <button type="submit" class="button is-primary is-large">
                 {{ 'settings.btn.save'|trans }} &nbsp;
@@ -169,7 +193,9 @@
             </div>
           </div>
 
-          <div class="control is-grouped">
+          <hr>
+
+          <div class="field is-grouped is-grouped-right">
             <div class="control">
               <button type="submit" class="button is-primary is-large">
                 {{ 'settings.btn.save'|trans }} &nbsp;
@@ -190,7 +216,7 @@
               <div class="select">
                 <select v-model="config.unity" @change="loadServices">
                   <option></option>
-                  <option v-for="unity in unities" :value="unity.id">
+                  <option v-for="unity in unities" :value="unity.id" :key="unity.id">
                     {{ unity.nome }}
                   </option>
                 </select>
@@ -202,10 +228,10 @@
             <label class="label">
               {{ 'settings.label.services'|trans }}
             </label>
-            <div class="control" v-for="service in services">
+            <div class="control" v-for="su in services" :key="su.servico.id">
               <label class="checkbox">
-                <input type="checkbox" :value="service.servico.id" v-model="config.services">
-                {{service.sigla}} - {{service.servico.nome}}
+                <input type="checkbox" :value="su.servico.id" v-model="config.services">
+                {{su.sigla}} - {{su.servico.nome}}
               </label>
             </div>
             <div class="control" v-if="!services || !services.length">
@@ -213,7 +239,9 @@
             </div>
           </div>
 
-          <div class="control is-grouped">
+          <hr>
+
+          <div class="field is-grouped is-grouped-right">
             <div class="control">
               <button type="submit" class="button is-primary is-large">
                 {{ 'settings.btn.save'|trans }} &nbsp;
@@ -230,6 +258,8 @@
 </template>
 
 <script>
+  import { remote } from 'electron'
+
   function load (ctx) {
     ctx.config = JSON.parse(JSON.stringify(ctx.$store.state.config))
     // defaults
@@ -286,6 +316,9 @@
           this.initialUsername !== this.config.initialUsername ||
           this.initialPassword !== this.config.initialPassword
         )
+      },
+      availablePrinters () {
+        return remote.getCurrentWebContents().getPrinters()
       }
     },
     methods: {

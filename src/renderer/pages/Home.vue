@@ -205,6 +205,7 @@
 
 <script>
   import auth from '@/store/modules/auth'
+  import { remote } from 'electron'
 
   let running = false
   let intervalId = 0
@@ -238,7 +239,7 @@
     timeoutId = setTimeout(() => {
       checkToken($store)
     }, 60 * 1000)
-}
+  }
 
   export default {
     name: 'home',
@@ -326,8 +327,26 @@
         this.page = 'printing'
         this.ticketInfo = ticket
         this.$store.dispatch('print', ticket).then((response) => {
-          const iframe = document.getElementById('frame-impressao')
-          iframe.src = 'data:text/html;charset=utf-8,' + response
+          const deviceName = this.$store.state.config.printer
+
+          if (deviceName) {
+            let win = new remote.BrowserWindow({ width: 800, height: 600, show: false })
+            win.once('ready-to-show', () => {
+              if (win) {
+                win.hide()
+              }
+            })
+            win.loadURL('data:text/html;charset=utf-8,' + response)
+            win.webContents.on('did-finish-load', () => {
+              win.webContents.print({
+                silent: true,
+                printBackground: true,
+                deviceName: deviceName
+              })
+              // close window after print order
+              win = null
+            })
+          }
         })
       },
 

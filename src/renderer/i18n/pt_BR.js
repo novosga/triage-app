@@ -9,6 +9,7 @@ export default {
   'settings.title': 'Configurações',
   'settings.subtitle': 'Configurações da triagem',
   'settings.label.locale': 'Idioma',
+  'settings.label.printer': 'Impressora',
   'settings.label.columns': 'Colunas',
   'settings.label.timer': 'Tempo de espera',
   'settings.label.departments': 'Agrupar por departmentos',
