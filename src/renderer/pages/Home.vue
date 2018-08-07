@@ -12,8 +12,8 @@
       Unity departments
     -->
     <article v-if="page=='departments'">
-      <header>
-        <h1>
+      <header :style="{'background-color': config.headerBgColor}">
+        <h1 :style="{'color': config.headerFontColor}">
           {{ 'home.departments.title'|trans }}
         </h1>
       </header>
@@ -21,13 +21,13 @@
         <p>{{ 'home.departments.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
           <div :class="columnClasses()" v-for="department in departments" :key="department.id">
-            <button type="button" class="button is-primary is-xlarge is-block" @click="selectDepartment(department)">
+            <button type="button" class="button is-xlarge is-block" @click="selectDepartment(department)" :style="{'color': config.buttonFontColor,'background-color': config.buttonBgColor}">
               {{department.nome}}
             </button>
           </div>
         </div>
       </section>
-      <footer>
+      <footer  :style="{'background-color': config.footerBgColor}">
       </footer>
     </article>
 
@@ -35,8 +35,8 @@
       Department services
     -->
     <article v-if="page=='department'">
-      <header>
-        <h1>
+      <header :style="{'background-color': config.headerBgColor}">
+        <h1 :style="{'color': config.headerFontColor}">
           {{department.nome}}
         </h1>
       </header>
@@ -44,13 +44,13 @@
         <p>{{ 'home.services.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
           <div :class="columnClasses()" v-for="su in departmentServices" :key="su.servico.id">
-            <button type="button" class="button is-primary is-xlarge is-block" @click="selectService(su)">
+            <button type="button" class="button is-xlarge is-block" @click="selectService(su)" :style="{'color': config.buttonFontColor,'background-color': config.buttonBgColor}">
               {{su.servico.nome}}
             </button>
           </div>
         </div>
       </section>
-      <footer>
+      <footer  :style="{'background-color': config.footerBgColor}">
         <button type="button" class="button is-large" @click="begin">
           <span class="icon is-small">
             <i class="fa fa-chevron-left"></i>
@@ -68,8 +68,8 @@
       All services
     -->
     <article v-if="page=='allServices'">
-      <header>
-        <h1>
+      <header :style="{'background-color': config.headerBgColor}">
+        <h1 :style="{'color': config.headerFontColor}">
           {{ 'home.services.title'|trans }}
         </h1>
       </header>
@@ -77,13 +77,13 @@
         <p>{{ 'home.services.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
           <div :class="columnClasses()" v-for="su in enabledServices" :key="su.servico.id">
-            <button type="button" class="button is-primary is-xlarge is-block" @click="selectService(su)">
+            <button type="button" class="button is-xlarge is-block" @click="selectService(su)" :style="{'color': config.buttonFontColor,'background-color': config.buttonBgColor}">
               {{su.servico.nome}}
             </button>
           </div>
         </div>
       </section>
-      <footer>
+      <footer  :style="{'background-color': config.footerBgColor}">
       </footer>
     </article>
 
@@ -91,8 +91,8 @@
       Service overview
     -->
     <article v-if="page=='service'">
-      <header>
-        <h1>
+      <header :style="{'background-color': config.headerBgColor}">
+        <h1 :style="{'color': config.headerFontColor}">
           {{servicoUnidade.servico.nome}}
         </h1>
       </header>
@@ -118,7 +118,7 @@
           </div>
         </div>
       </section>
-      <footer>
+      <footer  :style="{'background-color': config.footerBgColor}">
         <button type="button" class="button is-large" @click="begin">
           <span class="icon is-small">
             <i class="fa fa-chevron-left"></i>
@@ -136,8 +136,8 @@
       Priorities
     -->
     <article v-if="page=='priorities'">
-      <header>
-        <h1>
+      <header :style="{'background-color': config.headerBgColor}">
+        <h1 :style="{'color': config.headerFontColor}">
           {{servicoUnidade.servico.nome}}
         </h1>
       </header>
@@ -150,7 +150,7 @@
           </div>
         </div>
       </section>
-      <footer>
+      <footer  :style="{'background-color': config.footerBgColor}">
         <button type="button" class="button is-large" @click="begin">
           <span class="icon is-small">
             <i class="fa fa-chevron-left"></i>
@@ -168,8 +168,8 @@
       Printing
     -->
     <article v-if="page=='printing'" class="printing">
-      <header>
-        <h1>
+      <header :style="{'background-color': config.headerBgColor}">
+        <h1 :style="{'color': config.headerFontColor}">
           {{ 'home.print.title'|trans }}
         </h1>
       </header>
@@ -185,7 +185,7 @@
           </div>
         </div>
       </section>
-      <footer>
+      <footer  :style="{'background-color': config.footerBgColor}">
         <button type="button" class="button is-large" @click="begin">
           <span class="icon is-small">
             <i class="fa fa-chevron-left"></i>
@@ -261,6 +261,11 @@
         ticketInfo: null,
         timer: null,
         startTime: null
+      }
+    },
+    computed: {
+      config () {
+        return this.$store.state.config
       }
     },
     methods: {
@@ -469,7 +474,6 @@
     position: fixed
     header
       padding: 1.5rem 2rem
-      background-color: #4fc08d
       h1
         color: #ffffff
         font-size: 3rem
@@ -497,7 +501,6 @@
       padding: 2rem
       position: fixed
       bottom: 0
-      background-color: #f1f1f1
     .is-block
       width: 100%
       margin-top: 1rem

@@ -50,86 +50,186 @@
         <hr>
 
         <form @submit.prevent="save" v-if="tab==='interface'">
-          <div class="field">
-            <label class="label">
-              {{ 'settings.label.locale'|trans }}
-            </label>
-            <div class="control has-icons-left">
-              <span class="select">
-                <select v-model="config.locale">
-                  <option value="en">English</option>
-                  <option value="pt_BR">Português (Brasil)</option>
-                </select>
-              </span>
-              <span class="icon is-left">
-                <i class="fa fa-globe"></i>
-              </span>
+          <div class="columns">
+            <div class="column is-4">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.locale'|trans }}
+                </label>
+                <div class="control is-expanded has-icons-left">
+                  <span class="select is-fullwidth">
+                    <select v-model="config.locale">
+                      <option value="en">English</option>
+                      <option value="pt_BR">Português (Brasil)</option>
+                    </select>
+                  </span>
+                  <span class="icon is-left">
+                    <i class="fa fa-globe"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="column is-3">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.columns'|trans }}
+                </label>
+                <div class="control is-expanded has-icons-left">
+                  <span class="select is-fullwidth">
+                    <select v-model="config.columns">
+                      <option :value="1">1</option>
+                      <option :value="2">2</option>
+                      <option :value="3">3</option>
+                    </select>
+                  </span>
+                  <span class="icon is-left">
+                    <i class="fa fa-columns"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="column is-5">
+              <div class="field">
+                <label class="label">&nbsp;</label>
+                <div class="control">
+                  <label class="checkbox">
+                    <input type="checkbox" v-model="config.departments" :value="true">
+                    {{ 'settings.label.departments'|trans }}
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="label">
-              {{ 'settings.label.printer'|trans }}
-            </label>
-            <div class="control has-icons-left">
-              <span class="select">
-                <select v-model="config.printer">
-                  <option v-for="p in availablePrinters" :value="p.name" :key="p.name">
-                    {{p.name}}
-                  </option>
-                </select>
-              </span>
-              <span class="icon is-left">
-                <i class="fa fa-print"></i>
-              </span>
+          <div class="columns">
+            <div class="column is-8">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.printer'|trans }}
+                </label>
+                <div class="control has-icons-left">
+                  <span class="select is-fullwidth">
+                    <select v-model="config.printer">
+                      <option v-for="p in availablePrinters" :value="p.name" :key="p.name">
+                        {{p.name}}
+                      </option>
+                    </select>
+                  </span>
+                  <span class="icon is-left">
+                    <i class="fa fa-print"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="column is-4">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.timer'|trans }}
+                </label>
+                <div class="control is-expanded has-icons-left">
+                  <span class="select is-fullwidth">
+                    <select v-model="config.timer">
+                      <option :value="5">5s</option>
+                      <option :value="10">10s</option>
+                      <option :value="15">15s</option>
+                      <option :value="20">20s</option>
+                      <option :value="25">25s</option>
+                      <option :value="30">30s</option>
+                    </select>
+                  </span>
+                  <span class="icon is-left">
+                    <i class="fa fa-clock-o"></i>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="label">
-              {{ 'settings.label.columns'|trans }}
-            </label>
-            <div class="control has-icons-left">
-              <span class="select">
-                <select v-model="config.columns">
-                  <option :value="1">1</option>
-                  <option :value="2">2</option>
-                  <option :value="3">3</option>
-                </select>
-              </span>
-              <span class="icon is-left">
-                <i class="fa fa-columns"></i>
-              </span>
+          <h3 class="title">Cores</h3>
+
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.page_bg_color'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.pageBgColor">
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.page_font_color'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.pageFontColor">
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.header_bg_color'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.headerBgColor">
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.header_font_color'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.headerFontColor">
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="label">
-              {{ 'settings.label.timer'|trans }}
-            </label>
-            <div class="control has-icons-left">
-              <span class="select">
-                <select v-model="config.timer">
-                  <option :value="5">5s</option>
-                  <option :value="10">10s</option>
-                  <option :value="15">15s</option>
-                  <option :value="20">20s</option>
-                  <option :value="25">25s</option>
-                  <option :value="30">30s</option>
-                </select>
-              </span>
-              <span class="icon is-left">
-                <i class="fa fa-clock-o"></i>
-              </span>
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.button_bg_color'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.buttonBgColor">
+                </div>
+              </div>
             </div>
-          </div>
-
-          <div class="field">
-            <div class="control">
-              <label class="checkbox">
-                <input type="checkbox" v-model="config.departments" :value="true">
-                {{ 'settings.label.departments'|trans }}
-              </label>
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.button_font_color'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.buttonFontColor">
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.footer_bg_color'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.footerBgColor">
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.footer_font_color'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.footerFontColor">
+                </div>
+              </div>
             </div>
           </div>
 
@@ -268,6 +368,14 @@
     ctx.config.timer = ctx.config.timer || 10
     ctx.config.departments = !!ctx.config.departments
     ctx.config.services = ctx.config.services || []
+    ctx.config.pageBgColor = ctx.config.pageBgColor || '#FFFFFF'
+    ctx.config.pageFontColor = ctx.config.pageFontColor || '#000000'
+    ctx.config.headerBgColor = ctx.config.headerBgColor || '#4FC08D'
+    ctx.config.headerFontColor = ctx.config.headerFontColor || '#FFFFFF'
+    ctx.config.buttonBgColor = ctx.config.buttonBgColor || '#00C4A7'
+    ctx.config.buttonFontColor = ctx.config.buttonFontColor || '#FFFFFF'
+    ctx.config.footerBgColor = ctx.config.footerBgColor || '#F1F1F1'
+    ctx.config.footerFontColor = ctx.config.footerFontColor || '#FFFFFF'
 
     if (ctx.fetchUnities && ctx.config.server) {
       ctx.$store.dispatch('fetchUnities')
