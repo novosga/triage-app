@@ -301,7 +301,7 @@
 
       selectService (su) {
         this.servicoUnidade = su
-        if (this.priorities.length === 0) {
+        if (!su.prioridade || this.priorities.length === 0) {
           this.ticket(null)
         } else {
           this.page = 'service'
