@@ -102,7 +102,7 @@
           </div>
 
           <div class="columns">
-            <div class="column is-8">
+            <div class="column is-8" v-if="isDesktop">
               <div class="field">
                 <label class="label">
                   {{ 'settings.label.printer'|trans }}
@@ -358,7 +358,10 @@
 </template>
 
 <script>
-  import { remote } from 'electron'
+  let remote = null
+  if (!process.env.IS_WEB) {
+    remote = require('electron').remote
+  }
 
   function load (ctx) {
     ctx.config = JSON.parse(JSON.stringify(ctx.$store.state.config))
@@ -425,8 +428,14 @@
           this.initialPassword !== this.config.initialPassword
         )
       },
+      isDesktop () {
+        return !!remote
+      },
       availablePrinters () {
-        return remote.getCurrentWebContents().getPrinters()
+        if (remote) {
+          return remote.getCurrentWebContents().getPrinters()
+        }
+        return []
       }
     },
     methods: {

@@ -205,8 +205,12 @@
 
 <script>
   import auth from '@/store/modules/auth'
-  import { remote } from 'electron'
 
+  let remote = null
+  if (!process.env.IS_WEB) {
+    remote = require('electron').remote
+  }
+  
   let running = false
   let intervalId = 0
   let timeoutId = 0
@@ -332,25 +336,35 @@
         this.page = 'printing'
         this.ticketInfo = ticket
         this.$store.dispatch('print', ticket).then((response) => {
-          const deviceName = this.$store.state.config.printer
+          if (remote) {
+            // Desktop
+            const deviceName = this.$store.state.config.printer
 
-          if (deviceName) {
-            let win = new remote.BrowserWindow({ width: 800, height: 600, show: false })
-            win.once('ready-to-show', () => {
-              if (win) {
-                win.hide()
-              }
-            })
-            win.loadURL('data:text/html;charset=utf-8,' + response)
-            win.webContents.on('did-finish-load', () => {
-              win.webContents.print({
-                silent: true,
-                printBackground: true,
-                deviceName: deviceName
+            if (deviceName) {
+              let win = new remote.BrowserWindow({ width: 800, height: 600, show: false })
+              win.once('ready-to-show', () => {
+                if (win) {
+                  win.hide()
+                }
               })
-              // close window after print order
-              win = null
-            })
+              win.loadURL('data:text/html;charset=utf-8,' + response)
+              win.webContents.on('did-finish-load', () => {
+                win.webContents.print({
+                  silent: true,
+                  printBackground: true,
+                  deviceName: deviceName
+                })
+                // close window after print order
+                win = null
+              })
+            }
+          } else {
+            // Web
+            const iframe = document.getElementById('frame-impressao')
+            iframe.src = 'data:text/html;charset=utf-8,' + response
+            iframe.onload = function () {
+              iframe.contentWindow.print()
+            }
           }
         })
       },
