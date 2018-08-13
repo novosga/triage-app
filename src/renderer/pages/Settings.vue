@@ -194,6 +194,26 @@
             <div class="column">
               <div class="field">
                 <label class="label">
+                  {{ 'settings.label.footer_bg_color'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.footerBgColor">
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.footer_font_color'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.footerFontColor">
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">
                   {{ 'settings.label.button_bg_color'|trans }}
                 </label>
                 <div class="control">
@@ -211,23 +231,46 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          <div class="columns">
             <div class="column">
               <div class="field">
                 <label class="label">
-                  {{ 'settings.label.footer_bg_color'|trans }}
+                  {{ 'settings.label.button_priority_bg_color'|trans }}
                 </label>
                 <div class="control">
-                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.footerBgColor">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.buttonPriorityBgColor">
                 </div>
               </div>
             </div>
             <div class="column">
               <div class="field">
                 <label class="label">
-                  {{ 'settings.label.footer_font_color'|trans }}
+                  {{ 'settings.label.button_priority_font_color'|trans }}
                 </label>
                 <div class="control">
-                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.footerFontColor">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.buttonPriorityFontColor">
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.button_normal_bg_color'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.buttonNormalBgColor">
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.button_normal_font_color'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="text" placeholder="#000000" v-model="config.buttonNormalFontColor">
                 </div>
               </div>
             </div>
@@ -375,10 +418,14 @@
     ctx.config.pageFontColor = ctx.config.pageFontColor || '#000000'
     ctx.config.headerBgColor = ctx.config.headerBgColor || '#4FC08D'
     ctx.config.headerFontColor = ctx.config.headerFontColor || '#FFFFFF'
-    ctx.config.buttonBgColor = ctx.config.buttonBgColor || '#00C4A7'
-    ctx.config.buttonFontColor = ctx.config.buttonFontColor || '#FFFFFF'
     ctx.config.footerBgColor = ctx.config.footerBgColor || '#F1F1F1'
     ctx.config.footerFontColor = ctx.config.footerFontColor || '#FFFFFF'
+    ctx.config.buttonBgColor = ctx.config.buttonBgColor || '#00C4A7'
+    ctx.config.buttonFontColor = ctx.config.buttonFontColor || '#FFFFFF'
+    ctx.config.buttonNormalBgColor = ctx.config.buttonNormalBgColor || '#209CEE'
+    ctx.config.buttonNormalFontColor = ctx.config.buttonNormalFontColor || '#FFFFFF'
+    ctx.config.buttonPriorityBgColor = ctx.config.buttonPriorityBgColor || '#FF3860'
+    ctx.config.buttonPriorityFontColor = ctx.config.buttonPriorityFontColor || '#FFFFFF'
 
     if (ctx.fetchUnities && ctx.config.server) {
       ctx.$store.dispatch('fetchUnities')

@@ -107,12 +107,12 @@
         </div>
         <div class="columns is-multiline is-mobile">
           <div class="column is-6">
-            <button type="button" class="button is-info is-xlarge is-block" @click="ticket(null)">
+            <button type="button" class="button is-xlarge is-block" :style="{'color': config.buttonNormalFontColor,'background-color': config.buttonNormalBgColor}" @click="ticket(null)">
               {{ 'home.btn.normal'|trans }}
             </button>
           </div>
           <div class="column is-6">
-            <button type="button" class="button is-danger is-xlarge is-block" @click="selectPriority">
+            <button type="button" class="button is-xlarge is-block" :style="{'color': config.buttonPriorityFontColor,'background-color': config.buttonPriorityBgColor}" @click="selectPriority">
               {{ 'home.btn.priority'|trans }}
             </button>
           </div>
