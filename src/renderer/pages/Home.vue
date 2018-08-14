@@ -11,7 +11,7 @@
     <!--
       Unity departments
     -->
-    <article v-if="page=='departments'">
+    <article v-if="page=='departments'" :style="{'background-color': config.pageBgColor, 'color': config.pageFontColor}">
       <header :style="{'background-color': config.headerBgColor}">
         <h1 :style="{'color': config.headerFontColor}">
           {{ 'home.departments.title'|trans }}
@@ -27,14 +27,14 @@
           </div>
         </div>
       </section>
-      <footer  :style="{'background-color': config.footerBgColor}">
+      <footer :style="{'background-color': config.footerBgColor, 'color': config.footerFontColor}">
       </footer>
     </article>
 
     <!--
       Department services
     -->
-    <article v-if="page=='department'">
+    <article v-if="page=='department'" :style="{'background-color': config.pageBgColor, 'color': config.pageFontColor}">
       <header :style="{'background-color': config.headerBgColor}">
         <h1 :style="{'color': config.headerFontColor}">
           {{department.nome}}
@@ -50,7 +50,7 @@
           </div>
         </div>
       </section>
-      <footer  :style="{'background-color': config.footerBgColor}">
+      <footer :style="{'background-color': config.footerBgColor, 'color': config.footerFontColor}">
         <button type="button" class="button is-large" @click="begin">
           <span class="icon is-small">
             <i class="fa fa-chevron-left"></i>
@@ -67,7 +67,7 @@
     <!--
       All services
     -->
-    <article v-if="page=='allServices'">
+    <article v-if="page=='allServices'" :style="{'background-color': config.pageBgColor, 'color': config.pageFontColor}">
       <header :style="{'background-color': config.headerBgColor}">
         <h1 :style="{'color': config.headerFontColor}">
           {{ 'home.services.title'|trans }}
@@ -83,14 +83,14 @@
           </div>
         </div>
       </section>
-      <footer  :style="{'background-color': config.footerBgColor}">
+      <footer :style="{'background-color': config.footerBgColor, 'color': config.footerFontColor}">
       </footer>
     </article>
 
     <!--
       Service overview
     -->
-    <article v-if="page=='service'">
+    <article v-if="page=='service'" :style="{'background-color': config.pageBgColor, 'color': config.pageFontColor}">
       <header :style="{'background-color': config.headerBgColor}">
         <h1 :style="{'color': config.headerFontColor}">
           {{servicoUnidade.servico.nome}}
@@ -118,7 +118,7 @@
           </div>
         </div>
       </section>
-      <footer  :style="{'background-color': config.footerBgColor}">
+      <footer :style="{'background-color': config.footerBgColor, 'color': config.footerFontColor}">
         <button type="button" class="button is-large" @click="begin">
           <span class="icon is-small">
             <i class="fa fa-chevron-left"></i>
@@ -135,7 +135,7 @@
     <!--
       Priorities
     -->
-    <article v-if="page=='priorities'">
+    <article v-if="page=='priorities'" :style="{'background-color': config.pageBgColor, 'color': config.pageFontColor}">
       <header :style="{'background-color': config.headerBgColor}">
         <h1 :style="{'color': config.headerFontColor}">
           {{servicoUnidade.servico.nome}}
@@ -150,7 +150,7 @@
           </div>
         </div>
       </section>
-      <footer  :style="{'background-color': config.footerBgColor}">
+      <footer :style="{'background-color': config.footerBgColor, 'color': config.footerFontColor}">
         <button type="button" class="button is-large" @click="begin">
           <span class="icon is-small">
             <i class="fa fa-chevron-left"></i>
@@ -167,7 +167,7 @@
     <!--
       Printing
     -->
-    <article v-if="page=='printing'" class="printing">
+    <article v-if="page=='printing'" class="printing" :style="{'background-color': config.pageBgColor, 'color': config.pageFontColor}">
       <header :style="{'background-color': config.headerBgColor}">
         <h1 :style="{'color': config.headerFontColor}">
           {{ 'home.print.title'|trans }}
@@ -185,7 +185,7 @@
           </div>
         </div>
       </section>
-      <footer  :style="{'background-color': config.footerBgColor}">
+      <footer :style="{'background-color': config.footerBgColor, 'color': config.footerFontColor}">
         <button type="button" class="button is-large" @click="begin">
           <span class="icon is-small">
             <i class="fa fa-chevron-left"></i>
