@@ -1,7 +1,7 @@
 
 export default {
 
-  storagePrefixKey: 'painel-web.v2.',
+  storagePrefixKey: 'triagem-touch.v2.',
 
   get (name, defaultValue) {
     const json = localStorage.getItem(this.storagePrefixKey + name)
