@@ -1,6 +1,12 @@
-# triage
+# Novo SGA triage client
 
-> Novo SGA triage client
+Repositório onde contém os códigos do sistema de Auto-triagem do [NovoSGA](http://github.com/novosga/novosga) onde o cliente pode emitir a senha para o serviço qual necessita de atendimento.
+
+----
+
+Repository where it contains the codes of the Self-triagem system of [NovoSGA](http://github.com/novosga/novosga) where the customer can issue the password for the service which needs service.
+
+----
 
 #### Build Setup
 
