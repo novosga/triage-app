@@ -245,6 +245,15 @@
     }, 60 * 1000)
   }
 
+  function b64EncodeUnicode (str) {
+    // first we use encodeURIComponent to get percent-encoded UTF-8,
+    // then we convert the percent encodings into raw bytes which
+    // can be fed into btoa.
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => {
+      return String.fromCharCode('0x' + p1)
+    }))
+  }
+
   export default {
     name: 'home',
     data () {
@@ -361,10 +370,10 @@
           } else {
             // Web
             const iframe = document.getElementById('frame-impressao')
-            iframe.src = 'data:text/html;charset=utf-8,' + response
-            iframe.onload = function () {
-              iframe.contentWindow.print()
-            }
+            const base64 = b64EncodeUnicode(response)
+            iframe.contentWindow.document.open()
+            iframe.contentWindow.document.write('<iframe onload="print()" src="data:text/html;charset=UTF-8;base64,' + base64 + '" width="303" height="303" frameborder="0" marginheight="0" marginwidth="0">')
+            iframe.contentWindow.document.close()
           }
         })
       },
