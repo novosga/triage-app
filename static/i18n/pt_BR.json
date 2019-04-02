@@ -32,6 +32,7 @@
   "settings.label.client_secret": "Client Secret",
   "settings.label.unity": "Unidade",
   "settings.label.services": "Serviços",
+  "settings.label.web_hook": "Web hook",
   "settings.btn.save": "Salvar",
   "settings.services.empty": "Vazio",
   "home.btn.back": "Voltar",

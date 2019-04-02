@@ -205,6 +205,7 @@
 
 <script>
   import auth from '@/store/modules/auth'
+  import axios from 'axios'
 
   let remote = null
   if (!process.env.IS_WEB) {
@@ -338,6 +339,13 @@
         }
         this.$store.dispatch('newTicket', data).then((ticket) => {
           this.print(ticket)
+          if (this.$store.state.config.webHook) {
+            const config = {
+              method: 'post',
+              data: ticket
+            }
+            axios.request(this.$store.state.config.webHook, config)
+          }
         })
       },
 

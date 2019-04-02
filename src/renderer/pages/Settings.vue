@@ -276,6 +276,19 @@
             </div>
           </div>
 
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.web_hook'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="url" placeholder="https://" v-model="config.webHook">
+                </div>
+              </div>
+            </div>
+          </div>
+
           <hr>
 
           <div class="field is-grouped is-grouped-right">

@@ -32,6 +32,7 @@
   "settings.label.client_secret": "Client Secret",
   "settings.label.unity": "Unity",
   "settings.label.services": "Services",
+  "settings.label.web_hook": "Web hook",
   "settings.btn.save": "Save",
   "settings.services.empty": "Empty",
   "home.btn.back": "Back",
