@@ -245,9 +245,8 @@
 
     socket.on('connect', () => {
       log('[websocket] connected')
-      socket.emit('register panel', {
-        unity: $store.state.config.unity,
-        services: $store.state.config.services
+      socket.emit('register triage', {
+        unity: $store.state.config.unity
       })
     })
 
@@ -273,13 +272,13 @@
     })
 
     socket.on('register ok', () => {
-      log('[websocket] painel registered')
+      log('[websocket] triage registered')
     })
   }
 
   function connect ($root, $store) {
     if (!$store.state.config || !$store.state.config.server) {
-      log('panel no configured yet. go to settings!')
+      log('triage no configured yet. go to settings!')
       $root.$router.push('/settings')
       return
     }
@@ -432,7 +431,7 @@
         }
         this.$store.dispatch('newTicket', data).then((ticket) => {
           socket.emit('new ticket', {
-            unity: this.$store.state.config.unity
+            unity: data.unityId
           })
           this.print(ticket)
           if (this.$store.state.config.postTicketWebHook) {
