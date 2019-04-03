@@ -1,6 +1,6 @@
 <template>
   <div id="home">
-    <div class="menu">
+    <div class="menu" v-if="showMenu">
       <router-link to="/settings">
         <span class="icon">
           <i class="fa fa-cog"></i>
@@ -13,12 +13,12 @@
     -->
     <article v-if="page=='departments'" :style="{'background-color': config.pageBgColor, 'color': config.pageFontColor}">
       <header :style="{'background-color': config.headerBgColor}">
-        <h1 :style="{'color': config.headerFontColor}">
-          {{ 'home.departments.title'|trans }}
+        <h1 :style="{'color': config.headerFontColor, 'background-image': logoUrl}">
+          <span v-if="config.showTitle">{{'home.departments.title'|trans}}</span>&nbsp;
         </h1>
       </header>
       <section>
-        <p>{{ 'home.departments.subtitle'|trans }}</p>
+        <p v-if="config.showSubitle">{{ 'home.departments.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
           <div :class="columnClasses()" v-for="department in departments" :key="department.id">
             <button type="button" class="button is-xlarge is-block" @click="selectDepartment(department)" :style="{'color': config.buttonFontColor,'background-color': config.buttonBgColor}">
@@ -36,12 +36,12 @@
     -->
     <article v-if="page=='department'" :style="{'background-color': config.pageBgColor, 'color': config.pageFontColor}">
       <header :style="{'background-color': config.headerBgColor}">
-        <h1 :style="{'color': config.headerFontColor}">
-          {{department.nome}}
+        <h1 :style="{'color': config.headerFontColor, 'background-image': logoUrl}">
+          <span v-if="config.showTitle">{{department.nome}}</span>&nbsp;
         </h1>
       </header>
       <section>
-        <p>{{ 'home.services.subtitle'|trans }}</p>
+        <p v-if="config.showSubitle">{{ 'home.services.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
           <div :class="columnClasses()" v-for="su in departmentServices" :key="su.servico.id">
             <button type="button" class="button is-xlarge is-block" @click="selectService(su)" :style="{'color': config.buttonFontColor,'background-color': config.buttonBgColor}">
@@ -69,12 +69,12 @@
     -->
     <article v-if="page=='allServices'" :style="{'background-color': config.pageBgColor, 'color': config.pageFontColor}">
       <header :style="{'background-color': config.headerBgColor}">
-        <h1 :style="{'color': config.headerFontColor}">
-          {{ 'home.services.title'|trans }}
+        <h1 :style="{'color': config.headerFontColor, 'background-image': logoUrl}">
+          <span v-if="config.showTitle">{{'home.services.title'|trans}}</span>&nbsp;
         </h1>
       </header>
       <section>
-        <p>{{ 'home.services.subtitle'|trans }}</p>
+        <p v-if="config.showSubitle">{{ 'home.services.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
           <div :class="columnClasses()" v-for="su in enabledServices" :key="su.servico.id">
             <button type="button" class="button is-xlarge is-block" @click="selectService(su)" :style="{'color': config.buttonFontColor,'background-color': config.buttonBgColor}">
@@ -92,13 +92,13 @@
     -->
     <article v-if="page=='service'" :style="{'background-color': config.pageBgColor, 'color': config.pageFontColor}">
       <header :style="{'background-color': config.headerBgColor}">
-        <h1 :style="{'color': config.headerFontColor}">
-          {{servicoUnidade.servico.nome}}
+        <h1 :style="{'color': config.headerFontColor, 'background-image': logoUrl}">
+          <span v-if="config.showTitle">{{servicoUnidade.servico.nome}}</span>&nbsp;
         </h1>
       </header>
       <section>
         <div class="subservices" v-if="subservices.length">
-          <p>{{ 'home.service.subtitle'|trans }}</p>
+          <p v-if="config.showSubitle">{{ 'home.service.subtitle'|trans }}</p>
           <ul class="columns is-multiline is-mobile">
             <li v-for="subservice in subservices" :key="subservice.id" class="column is-6">
               {{subservice.nome}}
@@ -137,8 +137,8 @@
     -->
     <article v-if="page=='priorities'" :style="{'background-color': config.pageBgColor, 'color': config.pageFontColor}">
       <header :style="{'background-color': config.headerBgColor}">
-        <h1 :style="{'color': config.headerFontColor}">
-          {{servicoUnidade.servico.nome}}
+        <h1 :style="{'color': config.headerFontColor, 'background-image': logoUrl}">
+          <span v-if="config.showTitle">{{servicoUnidade.servico.nome}}</span>&nbsp;
         </h1>
       </header>
       <section>
@@ -169,8 +169,8 @@
     -->
     <article v-if="page=='printing'" class="printing" :style="{'background-color': config.pageBgColor, 'color': config.pageFontColor}">
       <header :style="{'background-color': config.headerBgColor}">
-        <h1 :style="{'color': config.headerFontColor}">
-          {{ 'home.print.title'|trans }}
+        <h1 :style="{'color': config.headerFontColor, 'background-image': logoUrl}">
+          <span v-if="config.showTitle">{{'home.print.title'|trans}}</span>&nbsp;
         </h1>
       </header>
       <section>
@@ -206,18 +206,103 @@
 <script>
   import auth from '@/store/modules/auth'
   import axios from 'axios'
+  import socketIO from 'socket.io-client/dist/socket.io'
+  import { log } from '@/util/functions'
 
   let remote = null
   if (!process.env.IS_WEB) {
     remote = require('electron').remote
   }
   
+  let socket = null
   let running = false
   let intervalId = 0
   let timeoutId = 0
 
   function isExpired ($store) {
     return auth.getters.isExpired($store.state.auth)
+  }
+
+  function doConnect ($root, $store) {
+    const tokens = $store.state.config.server.split('//')
+    const schema = tokens[0]
+    const host = tokens[1].split('/')[0].split(':')[0]
+    const port = 2020
+    const url = `${schema}//${host}:${port}`
+
+    log('[websocket] trying connect to websocket server: ' + url)
+
+    socket = socketIO(url, {
+      path: '/socket.io',
+      transports: ['websocket'],
+      secure: true,
+      timeout: 2000,
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 3
+    })
+
+    socket.on('connect', () => {
+      log('[websocket] connected')
+      socket.emit('register panel', {
+        unity: $store.state.config.unity,
+        services: $store.state.config.services
+      })
+    })
+
+    socket.on('disconnect', () => {
+      log('[websocket] disconnected!')
+    })
+  
+    socket.on('connect_error', (evt) => {
+      log('[websocket] connect error', evt)
+    })
+
+    socket.on('connect_timeout', () => {
+      log('[websocket] timeout')
+    })
+  
+    socket.on('reconnect_failed', () => {
+      log('[websocket] max attempts reached, ajax polling fallback')
+      socket.open()
+    })
+  
+    socket.on('error', (evt) => {
+      log('[websocket] error', evt)
+    })
+
+    socket.on('register ok', () => {
+      log('[websocket] painel registered')
+    })
+  }
+
+  function connect ($root, $store) {
+    if (!$store.state.config || !$store.state.config.server) {
+      log('panel no configured yet. go to settings!')
+      $root.$router.push('/settings')
+      return
+    }
+
+    if ($store.getters.isAuthenticated && $store.getters.isExpired) {
+      log('token expired, trying to refresh')
+
+      $store.dispatch('token').then(() => {
+        log('token refreshed successfully!')
+        doConnect($root, $store)
+      }, () => {
+        log('error on refresh token. go to settings!')
+        $root.$router.push('/settings')
+      })
+    } else {
+      doConnect($root, $store)
+    }
+  }
+
+  function disconnect () {
+    if (socket) {
+      socket.close()
+    }
   }
 
   function checkToken ($store) {
@@ -274,12 +359,17 @@
         },
         ticketInfo: null,
         timer: null,
-        startTime: null
+        startTime: null,
+        showMenu: true
       }
     },
     computed: {
       config () {
         return this.$store.state.config
+      },
+      logoUrl () {
+        const url = this.config.logo || '/static/images/logo.png'
+        return `url(${url})`
       }
     },
     methods: {
@@ -337,14 +427,16 @@
           priorityId: (priority ? priority.id : 1),
           customer: this.customer
         }
+        if (this.$store.state.config.preTicketWebHook) {
+          axios.request(this.$store.state.config.preTicketWebHook, { method: 'post', data: data })
+        }
         this.$store.dispatch('newTicket', data).then((ticket) => {
+          socket.emit('new ticket', {
+            unity: this.$store.state.config.unity
+          })
           this.print(ticket)
-          if (this.$store.state.config.webHook) {
-            const config = {
-              method: 'post',
-              data: ticket
-            }
-            axios.request(this.$store.state.config.webHook, config)
+          if (this.$store.state.config.postTicketWebHook) {
+            axios.request(this.$store.state.config.postTicketWebHook, { method: 'post', data: ticket })
           }
         })
       },
@@ -401,11 +493,23 @@
         }
 
         return classes.join(' ')
+      },
+
+      unlockMenuListener (evt) {
+        console.log(evt)
+        if (evt.keyCode === 81) {
+          this.showMenu = true
+        }
       }
     },
     beforeMount () {
+      connect(this, this.$store)
+
       const store = this.$store
       const config = store.state.config
+
+      this.showMenu = !store.state.config.lockMenu
+      document.addEventListener('keydown', this.unlockMenuListener)
 
       this.startTime = config.timer || 15
 
@@ -469,8 +573,10 @@
     },
     beforeDestroy () {
       running = false
+      disconnect()
       clearInterval(intervalId)
       clearTimeout(timeoutId)
+      document.removeEventListener('keydown', this.unlockMenuListener)
     },
     watch: {
       page () {
@@ -511,7 +617,6 @@
         font-weight: bold
         padding: .5rem 0
         text-align: center
-        background-image: url('/static/images/logo.png')
         background-repeat: no-repeat
         background-size: contain
     section

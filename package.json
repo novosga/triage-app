@@ -64,6 +64,7 @@
     "bulma": "^0.6.0",
     "font-awesome": "^4.7.0",
     "moment": "^2.18.1",
+    "socket.io-client": "^2.0.3",
     "vue": "^2.6.9",
     "vue-electron": "^1.0.6",
     "vue-router": "^3.0.1",
