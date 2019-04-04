@@ -34,6 +34,11 @@
                 {{ 'menu.services'|trans }}
               </a>
             </li>
+            <li>
+              <a @click="showTab('web_hooks')" :class="{'is-active': tab==='web_hooks'}">
+                {{ 'menu.web_hooks'|trans }}
+              </a>
+            </li>
           </ul>
         </aside>
       </div>
@@ -50,48 +55,117 @@
         <hr>
 
         <form @submit.prevent="save" v-if="tab==='interface'">
-          <div class="columns">
-            <div class="column is-4">
-              <div class="field">
-                <label class="label">
-                  {{ 'settings.label.locale'|trans }}
-                </label>
-                <div class="control is-expanded has-icons-left">
-                  <span class="select is-fullwidth">
-                    <select v-model="config.locale">
-                      <option value="en">English</option>
-                      <option value="es">Español</option>
-                      <option value="pt_BR">Português (Brasil)</option>
-                    </select>
-                  </span>
-                  <span class="icon is-left">
-                    <i class="fa fa-globe"></i>
-                  </span>
+          <div class="columns is-gapless">
+            <div class="column is-7">
+              <div class="columns is-multiline">
+                <div class="column is-8">
+                  <div class="field">
+                    <label class="label">
+                      {{ 'settings.label.locale'|trans }}
+                    </label>
+                    <div class="control is-expanded has-icons-left">
+                      <span class="select is-fullwidth">
+                        <select v-model="config.locale">
+                          <option value="en">English</option>
+                          <option value="es">Español</option>
+                          <option value="pt_BR">Português (Brasil)</option>
+                        </select>
+                      </span>
+                      <span class="icon is-left">
+                        <i class="fa fa-globe"></i>
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div class="column is-3">
-              <div class="field">
-                <label class="label">
-                  {{ 'settings.label.columns'|trans }}
-                </label>
-                <div class="control is-expanded has-icons-left">
-                  <span class="select is-fullwidth">
-                    <select v-model="config.columns">
-                      <option :value="1">1</option>
-                      <option :value="2">2</option>
-                      <option :value="3">3</option>
-                    </select>
-                  </span>
-                  <span class="icon is-left">
-                    <i class="fa fa-columns"></i>
-                  </span>
+                <div class="column is-4">
+                  <div class="field">
+                    <label class="label">
+                      {{ 'settings.label.columns'|trans }}
+                    </label>
+                    <div class="control is-expanded has-icons-left">
+                      <span class="select is-fullwidth">
+                        <select v-model="config.columns">
+                          <option :value="1">1</option>
+                          <option :value="2">2</option>
+                          <option :value="3">3</option>
+                        </select>
+                      </span>
+                      <span class="icon is-left">
+                        <i class="fa fa-columns"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="column is-8" v-if="isDesktop">
+                  <div class="field">
+                    <label class="label">
+                      {{ 'settings.label.printer'|trans }}
+                    </label>
+                    <div class="control has-icons-left">
+                      <span class="select is-fullwidth">
+                        <select v-model="config.printer">
+                          <option v-for="p in availablePrinters" :value="p.name" :key="p.name">
+                            {{p.name}}
+                          </option>
+                        </select>
+                      </span>
+                      <span class="icon is-left">
+                        <i class="fa fa-print"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="column is-4">
+                  <div class="field">
+                    <label class="label">
+                      {{ 'settings.label.timer'|trans }}
+                    </label>
+                    <div class="control is-expanded has-icons-left">
+                      <span class="select is-fullwidth">
+                        <select v-model="config.timer">
+                          <option :value="5">5s</option>
+                          <option :value="10">10s</option>
+                          <option :value="15">15s</option>
+                          <option :value="20">20s</option>
+                          <option :value="25">25s</option>
+                          <option :value="30">30s</option>
+                        </select>
+                      </span>
+                      <span class="icon is-left">
+                        <i class="fa fa-clock-o"></i>
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="column is-5">
               <div class="field">
                 <label class="label">&nbsp;</label>
+                <div class="control">
+                  <label class="checkbox">
+                    <input type="checkbox" v-model="config.showTitle" :value="true">
+                    {{ 'settings.label.show_title'|trans }}
+                  </label>
+                </div>
+              </div>
+              <div class="field">
+                <div class="control">
+                  <label class="checkbox">
+                    <input type="checkbox" v-model="config.showSubtitle" :value="true">
+                    {{ 'settings.label.show_subtitle'|trans }}
+                  </label>
+                </div>
+              </div>
+              <div class="field">
+                <div class="control">
+                  <label class="checkbox">
+                    <input type="checkbox" v-model="config.lockMenu" :value="true">
+                    {{ 'settings.label.lock_menu'|trans }}
+                  </label>
+                </div>
+              </div>
+              <div class="field">
                 <div class="control">
                   <label class="checkbox">
                     <input type="checkbox" v-model="config.departments" :value="true">
@@ -103,44 +177,17 @@
           </div>
 
           <div class="columns">
-            <div class="column is-8" v-if="isDesktop">
+            
+          </div>
+
+          <div class="columns">
+            <div class="column">
               <div class="field">
                 <label class="label">
-                  {{ 'settings.label.printer'|trans }}
+                  {{ 'settings.label.logo'|trans }}
                 </label>
-                <div class="control has-icons-left">
-                  <span class="select is-fullwidth">
-                    <select v-model="config.printer">
-                      <option v-for="p in availablePrinters" :value="p.name" :key="p.name">
-                        {{p.name}}
-                      </option>
-                    </select>
-                  </span>
-                  <span class="icon is-left">
-                    <i class="fa fa-print"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="column is-4">
-              <div class="field">
-                <label class="label">
-                  {{ 'settings.label.timer'|trans }}
-                </label>
-                <div class="control is-expanded has-icons-left">
-                  <span class="select is-fullwidth">
-                    <select v-model="config.timer">
-                      <option :value="5">5s</option>
-                      <option :value="10">10s</option>
-                      <option :value="15">15s</option>
-                      <option :value="20">20s</option>
-                      <option :value="25">25s</option>
-                      <option :value="30">30s</option>
-                    </select>
-                  </span>
-                  <span class="icon is-left">
-                    <i class="fa fa-clock-o"></i>
-                  </span>
+                <div class="control">
+                  <input class="input is-medium" type="url" placeholder="https://" v-model="config.logo">
                 </div>
               </div>
             </div>
@@ -277,19 +324,6 @@
             </div>
           </div>
 
-          <div class="columns">
-            <div class="column">
-              <div class="field">
-                <label class="label">
-                  {{ 'settings.label.web_hook'|trans }}
-                </label>
-                <div class="control">
-                  <input class="input is-medium" type="url" placeholder="https://" v-model="config.webHook">
-                </div>
-              </div>
-            </div>
-          </div>
-
           <hr>
 
           <div class="field is-grouped is-grouped-right">
@@ -409,6 +443,47 @@
             </div>
           </div>
         </form>
+
+        <form @submit.prevent="save" v-if="tab==='web_hooks'">
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.pre_ticket_web_hook'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="url" placeholder="https://" v-model="config.preTicketWebHook">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <label class="label">
+                  {{ 'settings.label.post_ticket_web_hook'|trans }}
+                </label>
+                <div class="control">
+                  <input class="input is-medium" type="url" placeholder="https://" v-model="config.postTicketWebHook">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="field is-grouped is-grouped-right">
+            <div class="control">
+              <button type="submit" class="button is-primary is-large">
+                {{ 'settings.btn.save'|trans }} &nbsp;
+                <span class="icon is-small">
+                  <i class="fa fa-save"></i>
+                </span>
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -440,6 +515,14 @@
     ctx.config.buttonNormalFontColor = ctx.config.buttonNormalFontColor || '#FFFFFF'
     ctx.config.buttonPriorityBgColor = ctx.config.buttonPriorityBgColor || '#FF3860'
     ctx.config.buttonPriorityFontColor = ctx.config.buttonPriorityFontColor || '#FFFFFF'
+
+    if (ctx.config.showTitle === undefined) {
+      ctx.config.showTitle = true
+    }
+
+    if (ctx.config.showSubtitle === undefined) {
+      ctx.config.showSubtitle = true
+    }
 
     if (ctx.fetchUnities && ctx.config.server) {
       ctx.$store.dispatch('fetchUnities')
