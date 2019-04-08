@@ -107,12 +107,12 @@
         </div>
         <div class="columns is-multiline is-mobile">
           <div class="column is-6">
-            <button type="button" class="button is-xlarge is-block" :style="{'color': config.buttonNormalFontColor,'background-color': config.buttonNormalBgColor}" @click="ticket(null)">
+            <button type="button" class="button is-xlarge is-block" :style="{'color': config.buttonNormalFontColor,'background-color': config.buttonNormalBgColor}" :disabled="busy" @click="ticket(null)">
               {{ 'home.btn.normal'|trans }}
             </button>
           </div>
           <div class="column is-6">
-            <button type="button" class="button is-xlarge is-block" :style="{'color': config.buttonPriorityFontColor,'background-color': config.buttonPriorityBgColor}" @click="selectPriority">
+            <button type="button" class="button is-xlarge is-block" :style="{'color': config.buttonPriorityFontColor,'background-color': config.buttonPriorityBgColor}" :disabled="busy" @click="selectPriority">
               {{ 'home.btn.priority'|trans }}
             </button>
           </div>
@@ -144,7 +144,7 @@
       <section>
         <div class="columns is-multiline is-mobile">
           <div class="column is-6" v-for="priority in priorities" :key="priority.id">
-            <button type="button" class="button is-danger is-xlarge is-block" @click="ticket(priority)">
+            <button type="button" class="button is-danger is-xlarge is-block" :disabled="busy" @click="ticket(priority)">
               {{priority.nome}}
             </button>
           </div>
@@ -343,6 +343,7 @@
     name: 'home',
     data () {
       return {
+        busy: false,
         firstPage: 'allServices',
         page: '',
         enabledServices: [],
@@ -420,6 +421,8 @@
       },
 
       ticket (priority) {
+        this.busy = true
+
         const data = {
           unityId: this.$store.state.config.unity,
           serviceId: this.servicoUnidade.servico.id,
@@ -429,15 +432,19 @@
         if (this.$store.state.config.preTicketWebHook) {
           axios.request(this.$store.state.config.preTicketWebHook, { method: 'post', data: data })
         }
-        this.$store.dispatch('newTicket', data).then((ticket) => {
-          socket.emit('new ticket', {
-            unity: data.unityId
+        this.$store.dispatch('newTicket', data)
+          .then((ticket) => {
+            socket.emit('new ticket', {
+              unity: data.unityId
+            })
+            this.print(ticket)
+            if (this.$store.state.config.postTicketWebHook) {
+              axios.request(this.$store.state.config.postTicketWebHook, { method: 'post', data: ticket })
+            }
+            this.busy = false
+          }, () => {
+            this.busy = false
           })
-          this.print(ticket)
-          if (this.$store.state.config.postTicketWebHook) {
-            axios.request(this.$store.state.config.postTicketWebHook, { method: 'post', data: ticket })
-          }
-        })
       },
 
       print (ticket) {
