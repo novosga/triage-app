@@ -144,6 +144,14 @@
                 <label class="label">&nbsp;</label>
                 <div class="control">
                   <label class="checkbox">
+                    <input type="checkbox" v-model="config.printEnabled" :value="true">
+                    {{ 'settings.label.print_enabled'|trans }}
+                  </label>
+                </div>
+              </div>
+              <div class="field">
+                <div class="control">
+                  <label class="checkbox">
                     <input type="checkbox" v-model="config.showTitle" :value="true">
                     {{ 'settings.label.show_title'|trans }}
                   </label>
@@ -445,29 +453,30 @@
         </form>
 
         <form @submit.prevent="save" v-if="tab==='web_hooks'">
-          <div class="columns">
-            <div class="column">
-              <div class="field">
-                <label class="label">
-                  {{ 'settings.label.pre_ticket_web_hook'|trans }}
-                </label>
-                <div class="control">
-                  <input class="input is-medium" type="url" placeholder="https://" v-model="config.preTicketWebHook">
-                </div>
-              </div>
+          <div class="field">
+            <label class="label">
+              {{ 'settings.label.pre_ticket_web_hook'|trans }}
+            </label>
+            <div class="control">
+              <input class="input is-medium" type="url" placeholder="https://" v-model="config.preTicketWebHook">
             </div>
           </div>
 
-          <div class="columns">
-            <div class="column">
-              <div class="field">
-                <label class="label">
-                  {{ 'settings.label.post_ticket_web_hook'|trans }}
-                </label>
-                <div class="control">
-                  <input class="input is-medium" type="url" placeholder="https://" v-model="config.postTicketWebHook">
-                </div>
-              </div>
+          <div class="field">
+            <label class="label">
+              {{ 'settings.label.post_ticket_web_hook'|trans }}
+            </label>
+            <div class="control">
+              <input class="input is-medium" type="url" placeholder="https://" v-model="config.postTicketWebHook">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">
+              {{ 'settings.label.print_web_hook'|trans }}
+            </label>
+            <div class="control">
+              <input class="input is-medium" type="url" placeholder="https://" v-model="config.printWebHook">
             </div>
           </div>
 
@@ -515,6 +524,10 @@
     ctx.config.buttonNormalFontColor = ctx.config.buttonNormalFontColor || '#FFFFFF'
     ctx.config.buttonPriorityBgColor = ctx.config.buttonPriorityBgColor || '#FF3860'
     ctx.config.buttonPriorityFontColor = ctx.config.buttonPriorityFontColor || '#FFFFFF'
+
+    if (ctx.config.printEnabled === undefined) {
+      ctx.config.printEnabled = true
+    }
 
     if (ctx.config.showTitle === undefined) {
       ctx.config.showTitle = true

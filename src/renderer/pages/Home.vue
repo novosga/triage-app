@@ -308,20 +308,20 @@
     clearTimeout(timeoutId)
 
     if (!running) {
-      console.log('not running')
+      log('not running')
       return
     }
 
-    console.log('checking token. Authenticated: ' + $store.getters.isAuthenticated)
+    log('checking token. Authenticated: ' + $store.getters.isAuthenticated)
 
     if ($store.getters.isAuthenticated && isExpired($store)) {
-      console.log('token expired, refreshing')
+      log('token expired, refreshing')
       $store
         .dispatch('refresh')
         .then(() => {
-          console.log('token refreshed')
+          log('token refreshed')
         }, e => {
-          console.log(e)
+          log(e)
         })
     }
 
@@ -337,6 +337,35 @@
     return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => {
       return String.fromCharCode('0x' + p1)
     }))
+  }
+
+  function desktopPrint (deviceName, response) {
+    if (deviceName) {
+      let win = new remote.BrowserWindow({ width: 800, height: 600, show: false })
+      win.once('ready-to-show', () => {
+        if (win) {
+          win.hide()
+        }
+      })
+      win.loadURL('data:text/html;charset=utf-8,' + response)
+      win.webContents.on('did-finish-load', () => {
+        win.webContents.print({
+          silent: true,
+          printBackground: true,
+          deviceName: deviceName
+        })
+        // close window after print order
+        win = null
+      })
+    }
+  }
+
+  function webPrint (response) {
+    const iframe = document.getElementById('frame-impressao')
+    const base64 = b64EncodeUnicode(response)
+    iframe.contentWindow.document.open()
+    iframe.contentWindow.document.write('<iframe onload="print()" src="data:text/html;charset=UTF-8;base64,' + base64 + '" width="303" height="303" frameborder="0" marginheight="0" marginwidth="0">')
+    iframe.contentWindow.document.close()
   }
 
   export default {
@@ -422,28 +451,37 @@
 
       ticket (priority) {
         this.busy = true
+        let promise = Promise.resolve()
 
         const data = {
-          unityId: this.$store.state.config.unity,
+          unityId: this.config.unity,
           serviceId: this.servicoUnidade.servico.id,
           priorityId: (priority ? priority.id : 1),
           customer: this.customer
         }
-        if (this.$store.state.config.preTicketWebHook) {
-          axios.request(this.$store.state.config.preTicketWebHook, { method: 'post', data: data })
+        if (this.config.preTicketWebHook) {
+          promise = axios.request(this.config.preTicketWebHook, { method: 'post', data: data })
         }
-        this.$store.dispatch('newTicket', data)
-          .then((ticket) => {
-            socket.emit('new ticket', {
-              unity: data.unityId
-            })
-            this.print(ticket)
-            if (this.$store.state.config.postTicketWebHook) {
-              axios.request(this.$store.state.config.postTicketWebHook, { method: 'post', data: ticket })
-            }
-            this.busy = false
-          }, () => {
-            this.busy = false
+        promise
+          .then(() => {
+            this.$store.dispatch('newTicket', data)
+              .then((ticket) => {
+                socket.emit('new ticket', {
+                  unity: data.unityId
+                })
+                this.print(ticket)
+                if (this.config.postTicketWebHook) {
+                  axios.request(this.config.postTicketWebHook, { method: 'post', data: ticket })
+                }
+                this.busy = false
+              }, () => {
+                this.busy = false
+              })
+          }, (e) => {
+            log(e)
+          })
+          .catch((e) => {
+            log(e)
           })
       },
 
@@ -451,42 +489,25 @@
         this.page = 'printing'
         this.ticketInfo = ticket
         this.$store.dispatch('print', ticket).then((response) => {
-          if (remote) {
-            // Desktop
-            const deviceName = this.$store.state.config.printer
+          if (this.config.printWebHook) {
+            axios.request(this.config.printWebHook, { headers: { 'Content-Type': 'text/html' }, responseType: 'text', method: 'post', data: response })
+          }
 
-            if (deviceName) {
-              let win = new remote.BrowserWindow({ width: 800, height: 600, show: false })
-              win.once('ready-to-show', () => {
-                if (win) {
-                  win.hide()
-                }
-              })
-              win.loadURL('data:text/html;charset=utf-8,' + response)
-              win.webContents.on('did-finish-load', () => {
-                win.webContents.print({
-                  silent: true,
-                  printBackground: true,
-                  deviceName: deviceName
-                })
-                // close window after print order
-                win = null
-              })
+          if (this.config.printEnabled) {
+            if (remote) {
+              // Desktop
+              desktopPrint(this.config.printer, response)
+            } else {
+              // Web
+              webPrint(response)
             }
-          } else {
-            // Web
-            const iframe = document.getElementById('frame-impressao')
-            const base64 = b64EncodeUnicode(response)
-            iframe.contentWindow.document.open()
-            iframe.contentWindow.document.write('<iframe onload="print()" src="data:text/html;charset=UTF-8;base64,' + base64 + '" width="303" height="303" frameborder="0" marginheight="0" marginwidth="0">')
-            iframe.contentWindow.document.close()
           }
         })
       },
 
       columnClasses () {
         let classes = [ 'column' ]
-        switch (this.$store.state.config.columns) {
+        switch (this.config.columns) {
           case 1:
             classes.push('is-12')
             break
@@ -502,7 +523,6 @@
       },
 
       unlockMenuListener (evt) {
-        console.log(evt)
         if (evt.keyCode === 81) {
           this.showMenu = true
         }
