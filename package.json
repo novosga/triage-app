@@ -2,7 +2,7 @@
   "name": "triagem-touch",
   "description": "Novo SGA triage client",
   "license": "MIT",
-  "version": "2.1",
+  "version": "2.1.0",
   "homepage": "http://novosga.org",
   "author": {
     "name": "Rogerio Lino",
