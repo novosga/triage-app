@@ -2,7 +2,8 @@ import { Client } from '@/services/api'
 
 const state = {
   unities: [],
-  services: []
+  services: [],
+  departments: []
 }
 
 const getters = {
@@ -16,6 +17,10 @@ const mutations = {
 
   updateServices (state, services) {
     state.services = services
+  },
+
+  updateDepartments (state, departments) {
+    state.departments = departments
   }
 }
 
@@ -48,6 +53,22 @@ const actions = {
         .services(rootState.auth.accessToken, unityId)
         .then(data => {
           commit('updateServices', data)
+          resolve(data)
+        }, error => {
+          reject(error)
+        })
+    })
+  },
+
+  fetchDepartments ({ state, commit, rootState }) {
+    commit('updateDepartments', [])
+
+    return new Promise((resolve, reject) => {
+      const api = new Client(rootState.config.server)
+      api
+        .departments(rootState.auth.accessToken)
+        .then(data => {
+          commit('updateDepartments', data)
           resolve(data)
         }, error => {
           reject(error)

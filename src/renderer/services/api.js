@@ -68,6 +68,15 @@ class Client {
     return this.request(`servicos/${serviceId}`, config)
   }
 
+  departments (token) {
+    const config = {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    }
+    return this.request(`departamentos`, config)
+  }
+
   ticket (token, unityId, serviceId, priorityId, customerId, customerName) {
     const data = {
       unidade: unityId,

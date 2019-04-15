@@ -20,9 +20,9 @@
       <section>
         <p v-if="config.showSubitle">{{ 'home.departments.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
-          <div :class="columnClasses()" v-for="department in departments" :key="department.id">
-            <button type="button" class="button is-xlarge is-block" @click="selectDepartment(department)" :style="{'color': config.buttonFontColor,'background-color': config.buttonBgColor}">
-              {{department.nome}}
+          <div :class="columnClasses()" v-for="config in enabledDepartments" :key="config.department.id">
+            <button type="button" class="button is-xlarge is-block" @click="selectDepartment(config.department)" :style="buttonStyle(config)">
+              {{config.department.nome}}
             </button>
           </div>
         </div>
@@ -43,9 +43,9 @@
       <section>
         <p v-if="config.showSubitle">{{ 'home.services.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
-          <div :class="columnClasses()" v-for="su in departmentServices" :key="su.servico.id">
-            <button type="button" class="button is-xlarge is-block" @click="selectService(su)" :style="{'color': config.buttonFontColor,'background-color': config.buttonBgColor}">
-              {{su.servico.nome}}
+          <div :class="columnClasses()" v-for="config in departmentServices" :key="config.servicoUnidade.servico.id">
+            <button type="button" class="button is-xlarge is-block" @click="selectService(config.servicoUnidade)" :style="buttonStyle(config)">
+              {{config.servicoUnidade.servico.nome}}
             </button>
           </div>
         </div>
@@ -76,9 +76,9 @@
       <section>
         <p v-if="config.showSubitle">{{ 'home.services.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
-          <div :class="columnClasses()" v-for="su in enabledServices" :key="su.servico.id">
-            <button type="button" class="button is-xlarge is-block" @click="selectService(su)" :style="{'color': config.buttonFontColor,'background-color': config.buttonBgColor}">
-              {{su.servico.nome}}
+          <div :class="columnClasses()" v-for="config in enabledServices" :key="config.servicoUnidade.servico.id">
+            <button type="button" class="button is-xlarge is-block" @click="selectService(config.servicoUnidade)" :style="buttonStyle(config)">
+              {{config.servicoUnidade.servico.nome}}
             </button>
           </div>
         </div>
@@ -304,7 +304,7 @@
     }
   }
 
-  function checkToken ($store) {
+  function checkToken (ctx, $store) {
     clearTimeout(timeoutId)
 
     if (!running) {
@@ -320,13 +320,14 @@
         .dispatch('refresh')
         .then(() => {
           log('token refreshed')
+          ctx.fetchData()
         }, e => {
           log(e)
         })
     }
 
     timeoutId = setTimeout(() => {
-      checkToken($store)
+      checkToken(ctx, $store)
     }, 60 * 1000)
   }
 
@@ -376,9 +377,9 @@
         firstPage: 'allServices',
         page: '',
         enabledServices: [],
+        enabledDepartments: [],
         servicoUnidade: null,
         department: null,
-        departments: [],
         departmentServices: [],
         subservices: [],
         priorities: [],
@@ -427,8 +428,8 @@
       selectDepartment (department) {
         this.page = 'department'
         this.department = department
-        this.departmentServices = this.enabledServices.filter(su => {
-          return su.departamento && su.departamento.id === department.id
+        this.departmentServices = this.enabledServices.filter(s => {
+          return s.servicoUnidade.departamento && s.servicoUnidade.departamento.id === department.id
         })
       },
 
@@ -526,7 +527,84 @@
         if (evt.keyCode === 81) {
           this.showMenu = true
         }
+      },
+
+      buttonStyle (config) {
+        config = (config || {})
+
+        let style = {
+          color: config.fontColor || this.config.buttonFontColor,
+          backgroundColor: config.bgColor || this.config.buttonBgColor
+        }
+
+        return style
+      },
+
+      fetchData () {
+        this.enabledDepartments = []
+        this.enabledServices = []
+        let promise = null
+        let promises = []
+
+        promise = this.$store.dispatch('fetchPriorities', this.config.unity).then((priorities) => {
+          this.priorities = priorities.filter((p) => {
+            return p.peso > 0
+          })
+        })
+        promises.push(promise)
+
+        // refreshing saved data
+        promise = this.$store.dispatch('fetchDepartments').then((departments) => {
+          this.config.departments.forEach(d => {
+            const config = JSON.parse(JSON.stringify(d))
+            if (config.enabled) {
+              config.departament = departments.filter((d2) => d2.id === config.department.id)[0]
+              if (config.departament) {
+                this.enabledDepartments.push(config)
+              }
+            }
+          })
+        })
+        promises.push(promise)
+
+        // refreshing saved data
+        promise = this.$store.dispatch('fetchServices', this.config.unity).then((services) => {
+          this.config.services.forEach(s => {
+            const config = JSON.parse(JSON.stringify(s))
+            if (config.enabled) {
+              const su = services.filter((s2) => s2.servico.id === config.servicoUnidade.servico.id)[0]
+              if (su) {
+                config.servicoUnidade = su
+                this.enabledServices.push(config)
+              }
+            }
+          })
+        })
+        promises.push(promise)
+
+        Promise.all(promises).then(() => {
+          if (this.enabledServices.length === 0) {
+            this.$router.push('/settings')
+            return
+          }
+
+          if (this.enabledServices.length > 1) {
+            if (this.config.groupByDepartments && this.enabledDepartments.length > 0) {
+              this.firstPage = 'departments'
+            } else {
+              this.firstPage = 'allServices'
+            }
+          } else {
+            this.firstPage = 'service'
+            this.servicoUnidade = this.enabledServices[0].servicoUnidade
+          }
+
+          this.begin()
+        })
       }
+    },
+    mounted () {
+      document.querySelector('html').style.fontSize = (this.config.scale * 100) + '%'
     },
     beforeMount () {
       connect(this, this.$store)
@@ -545,53 +623,10 @@
       }
       if (!running) {
         running = true
-        checkToken(store)
+        checkToken(this, store)
       }
 
-      store.dispatch('fetchServices', config.unity).then((services) => {
-        this.enabledServices = []
-        for (let j = 0; j < config.services.length; j++) {
-          let id = config.services[j]
-          for (let i = 0; i < services.length; i++) {
-            let su = services[i]
-            if (su.servico.id === id) {
-              this.enabledServices.push(su)
-              if (su.departamento) {
-                let contains = false
-                for (let k = 0; k < this.departments.length; k++) {
-                  if (this.departments[k].id === su.departamento.id) {
-                    contains = true
-                    break
-                  }
-                }
-                if (!contains) {
-                  this.departments.push(su.departamento)
-                }
-              }
-              break
-            }
-          }
-        }
-
-        if (this.enabledServices.length > 1) {
-          if (config.departments) {
-            this.firstPage = 'departments'
-          } else {
-            this.firstPage = 'allServices'
-          }
-        } else {
-          this.firstPage = 'service'
-          this.servicoUnidade = this.enabledServices[0]
-        }
-
-        this.begin()
-      })
-
-      store.dispatch('fetchPriorities', config.unity).then((priorities) => {
-        this.priorities = priorities.filter((p) => {
-          return p.peso > 0
-        })
-      })
+      this.fetchData()
 
       this.intervalId = setInterval(() => {
         this.tick()
@@ -613,21 +648,25 @@
 </script>
 
 <style lang="sass">
-  #home .menu
+  #home
+    height: 100%
     position: fixed
-    top: 2vh
-    left: 2vw
-    background-color: rgba(0,0,0,.5)
-    padding: 10px
-    border-radius: 8px
-    opacity: 0
-    z-index: 100
-    &:hover
-      opacity: 1
-      transition: opacity 0.2s ease-in-out
-      background-color: rgba(0,0,0,1)
-    a
-      color: #ffffff
+    width: 100%
+    .menu
+      position: fixed
+      top: 2vh
+      left: 2vw
+      background-color: rgba(0,0,0,.5)
+      padding: 10px
+      border-radius: 8px
+      opacity: 0
+      z-index: 100
+      &:hover
+        opacity: 1
+        transition: opacity 0.2s ease-in-out
+        background-color: rgba(0,0,0,1)
+      a
+        color: #ffffff
 
   article
     width: 100%
