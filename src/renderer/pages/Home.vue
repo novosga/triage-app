@@ -435,11 +435,18 @@
 
       selectService (su) {
         this.servicoUnidade = su
-        if (!su.prioridade || this.priorities.length === 0) {
+        // somente normal ou prioridades vazias (imprime direto)
+        if (su.tipo === 2 || this.priorities.length === 0) {
           this.ticket(null)
-        } else {
-          this.page = 'service'
+          return
         }
+        // somente prioridade, e apenas 1 prioridade (imprime direto)
+        if (su.tipo === 3 && this.priorities.length === 1) {
+          this.ticket(this.priorities[0])
+          return
+        }
+        // exibe tela para escolha da prioridade
+        this.page = 'service'
       },
 
       selectPriority () {
@@ -475,7 +482,8 @@
                   axios.request(this.config.postTicketWebHook, { method: 'post', data: ticket })
                 }
                 this.busy = false
-              }, () => {
+              }, error => {
+                this.$swal('Oops!', error, 'error')
                 this.busy = false
               })
           }, (e) => {
