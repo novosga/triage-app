@@ -212,7 +212,7 @@
           </div>
 
           <div class="columns">
-            
+
           </div>
 
           <div class="columns">
@@ -757,7 +757,7 @@
             }
           }
           // appeding new services
-          this.config.services.concat(services.map(su => {
+          this.config.services = this.config.services.concat(services.map(su => {
             return {
               enabled: false,
               servicoUnidade: su,
@@ -783,7 +783,7 @@
             }
           }
           // appeding new departments
-          this.config.departments.concat(departments.map(d => {
+          this.config.departments = this.config.departments.concat(departments.map(d => {
             return {
               enabled: false,
               department: d,
