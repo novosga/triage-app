@@ -683,17 +683,17 @@
     left: 0
     position: fixed
     header
-      padding: 1.5rem 2rem
+      padding: 1vh 2vh
       h1
         color: #ffffff
         font-size: 3rem
         font-weight: bold
-        padding: .5rem 0
+        padding: 1vh
         text-align: center
         background-repeat: no-repeat
         background-size: contain
     section
-      padding: 2rem
+      padding: 1vw
       p
         text-align: center
         font-size: 1.5rem
@@ -707,7 +707,7 @@
             font-size: 2.5rem
     footer
       width: 100%
-      padding: 2rem
+      padding: 2vh
       position: fixed
       bottom: 0
     .is-block

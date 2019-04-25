@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <div class="columns">
-      <div class="column is-2-desktop is-3-tablet is-3-mobile column-menu">
+    <div class="columns is-mobile">
+      <div class="column is-2-desktop is-3-tablet is-3-mobile">
         <aside class="menu">
           <img src="static/images/logo.png">
 
@@ -47,7 +47,7 @@
           </ul>
         </aside>
       </div>
-      <div class="column">
+      <div class="column is-10-desktop is-9-tablet is-9-mobile">
         <div class="heading">
           <h1 class="title">
             {{ 'settings.title'|trans }}
@@ -439,7 +439,7 @@
               {{ 'settings.label.unity'|trans }}
             </label>
             <div class="control">
-              <div class="select">
+              <div class="select is-fullwidth">
                 <select v-model="config.unity" @change="changeUnity">
                   <option></option>
                   <option v-for="unity in unities" :value="unity.id" :key="unity.id">
@@ -829,7 +829,8 @@
   <style lang="sass">
     aside
       img
-        height: 60px
+        width: 100%
+        max-height: 60px
     .columns .column
       padding: 2rem
   </style>
