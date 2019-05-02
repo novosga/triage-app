@@ -750,7 +750,12 @@
           for (let c of current) {
             for (let s of this.services) {
               if (s.servico.id === c.servicoUnidade.servico.id) {
-                this.config.services.push(c)
+                this.config.services.push({
+                  enabled: c.enabled,
+                  servicoUnidade: s,
+                  buttonColor: c.buttonColor,
+                  fontColor: c.fontColor
+                })
                 services.splice(services.indexOf(s), 1)
                 break
               }
@@ -776,7 +781,12 @@
           for (let c of current) {
             for (let d of this.activeDepartments) {
               if (d.id === c.department.id) {
-                this.config.departments.push(c)
+                this.config.departments.push({
+                  enabled: c.enabled,
+                  department: d,
+                  bgColor: c.bgColor,
+                  fontColor: c.fontColor
+                })
                 departments.splice(departments.indexOf(d), 1)
                 break
               }
