@@ -206,7 +206,6 @@
 <script>
   import auth from '@/store/modules/auth'
   import axios from 'axios'
-  import socketIO from 'socket.io-client/dist/socket.io'
   import { log } from '@/util/functions'
 
   let remote = null
@@ -214,66 +213,12 @@
     remote = require('electron').remote
   }
   
-  let socket = null
   let running = false
   let intervalId = 0
   let timeoutId = 0
 
   function isExpired ($store) {
     return auth.getters.isExpired($store.state.auth)
-  }
-
-  function doConnect ($root, $store) {
-    const tokens = $store.state.config.server.split('//')
-    const schema = tokens[0]
-    const host = tokens[1].split('/')[0].split(':')[0]
-    const port = 2020
-    const url = `${schema}//${host}:${port}`
-
-    log('[websocket] trying connect to websocket server: ' + url)
-
-    socket = socketIO(url, {
-      path: '/socket.io',
-      transports: ['websocket'],
-      secure: true,
-      timeout: 2000,
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: 3
-    })
-
-    socket.on('connect', () => {
-      log('[websocket] connected')
-      socket.emit('register triage', {
-        unity: $store.state.config.unity
-      })
-    })
-
-    socket.on('disconnect', () => {
-      log('[websocket] disconnected!')
-    })
-  
-    socket.on('connect_error', (evt) => {
-      log('[websocket] connect error', evt)
-    })
-
-    socket.on('connect_timeout', () => {
-      log('[websocket] timeout')
-    })
-  
-    socket.on('reconnect_failed', () => {
-      log('[websocket] max attempts reached, ajax polling fallback')
-      socket.open()
-    })
-  
-    socket.on('error', (evt) => {
-      log('[websocket] error', evt)
-    })
-
-    socket.on('register ok', () => {
-      log('[websocket] triage registered')
-    })
   }
 
   function connect ($root, $store) {
@@ -288,19 +233,10 @@
 
       $store.dispatch('token').then(() => {
         log('token refreshed successfully!')
-        doConnect($root, $store)
       }, () => {
         log('error on refresh token. go to settings!')
         $root.$router.push('/settings')
       })
-    } else {
-      doConnect($root, $store)
-    }
-  }
-
-  function disconnect () {
-    if (socket) {
-      socket.close()
     }
   }
 
@@ -474,9 +410,6 @@
           .then(() => {
             this.$store.dispatch('newTicket', data)
               .then((ticket) => {
-                socket.emit('new ticket', {
-                  unity: data.unityId
-                })
                 this.print(ticket)
                 if (this.config.postTicketWebHook) {
                   axios.request(this.config.postTicketWebHook, { method: 'post', data: ticket })
@@ -642,7 +575,6 @@
     },
     beforeDestroy () {
       running = false
-      disconnect()
       clearInterval(intervalId)
       clearTimeout(timeoutId)
       document.removeEventListener('keydown', this.unlockMenuListener)
