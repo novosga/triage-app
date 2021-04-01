@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container settings">
     <div class="columns is-mobile">
       <div class="column is-2-desktop is-3-tablet is-3-mobile">
         <aside class="menu">
@@ -837,10 +837,11 @@
 </script>
 
   <style lang="sass">
-    aside
-      img
-        width: 100%
-        max-height: 60px
-    .columns .column
-      padding: 2rem
+    settings
+      aside
+        img
+          width: 100%
+          max-height: 60px
+      .columns .column
+        padding: 2rem
   </style>

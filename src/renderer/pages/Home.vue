@@ -106,12 +106,12 @@
           </ul>
         </div>
         <div class="columns is-multiline is-mobile">
-          <div class="column is-6">
+          <div :class="columnClasses()">
             <button type="button" class="button is-xlarge is-block" :style="{'color': config.buttonNormalFontColor,'background-color': config.buttonNormalBgColor}" :disabled="busy" @click="ticket(null)">
               {{ 'home.btn.normal'|trans }}
             </button>
           </div>
-          <div class="column is-6">
+          <div :class="columnClasses()">
             <button type="button" class="button is-xlarge is-block" :style="{'color': config.buttonPriorityFontColor,'background-color': config.buttonPriorityBgColor}" :disabled="busy" @click="selectPriority">
               {{ 'home.btn.priority'|trans }}
             </button>
@@ -143,8 +143,8 @@
       </header>
       <section>
         <div class="columns is-multiline is-mobile">
-          <div class="column is-6" v-for="priority in priorities" :key="priority.id">
-            <button type="button" class="button is-danger is-xlarge is-block" :disabled="busy" @click="ticket(priority)">
+          <div :class="columnClasses()" v-for="priority in priorities" :key="priority.id">
+            <button type="button" class="button is-danger is-xlarge is-block" :disabled="busy" @click="ticket(priority)" :style="'background-color: ' + priority.cor">
               {{priority.nome}}
             </button>
           </div>
@@ -336,6 +336,24 @@
       logoUrl () {
         const url = this.config.logo || '/static/images/logo.png'
         return `url(${url})`
+      },
+      lowerPriority () {
+        let priority = this.priorities[0]
+        this.priorities.forEach(p => {
+          if (p.peso < priority.peso) {
+            priority = p
+          }
+        })
+        return priority
+      },
+      higherPriority () {
+        let priority = this.priorities[0]
+        this.priorities.forEach(p => {
+          if (p.peso > priority.peso) {
+            priority = p
+          }
+        })
+        return priority
       }
     },
     methods: {
@@ -400,7 +418,7 @@
         const data = {
           unityId: this.config.unity,
           serviceId: this.servicoUnidade.servico.id,
-          priorityId: (priority ? priority.id : 1),
+          priorityId: (priority ? priority.id : this.lowerPriority.id),
           customer: this.customer
         }
         if (this.config.preTicketWebHook) {
