@@ -18,7 +18,7 @@
         </h1>
       </header>
       <section>
-        <p v-if="config.showSubtitle">{{ 'home.departments.subtitle'|trans }}</p>
+        <p v-if="config.showSubitle">{{ 'home.departments.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
           <div :class="columnClasses()" v-for="config in enabledDepartments" :key="config.department.id">
             <button type="button" class="button is-xlarge is-block" @click="selectDepartment(config.department)" :style="buttonStyle(config)">
@@ -41,7 +41,7 @@
         </h1>
       </header>
       <section>
-        <p v-if="config.showSubtitle">{{ 'home.services.subtitle'|trans }}</p>
+        <p v-if="config.showSubitle">{{ 'home.services.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
           <div :class="columnClasses()" v-for="config in departmentServices" :key="config.servicoUnidade.servico.id">
             <button type="button" class="button is-xlarge is-block" @click="selectService(config.servicoUnidade)" :style="buttonStyle(config)">
@@ -74,7 +74,7 @@
         </h1>
       </header>
       <section>
-        <p v-if="config.showSubtitle">{{ 'home.services.subtitle'|trans }}</p>
+        <p v-if="config.showSubitle">{{ 'home.services.subtitle'|trans }}</p>
         <div class="columns is-multiline is-mobile">
           <div :class="columnClasses()" v-for="config in enabledServices" :key="config.servicoUnidade.servico.id">
             <button type="button" class="button is-xlarge is-block" @click="selectService(config.servicoUnidade)" :style="buttonStyle(config)">
@@ -98,7 +98,7 @@
       </header>
       <section>
         <div class="subservices" v-if="subservices.length">
-          <p v-if="config.showSubtitle">{{ 'home.service.subtitle'|trans }}</p>
+          <p v-if="config.showSubitle">{{ 'home.service.subtitle'|trans }}</p>
           <ul class="columns is-multiline is-mobile">
             <li v-for="subservice in subservices" :key="subservice.id" class="column is-6">
               {{subservice.nome}}
