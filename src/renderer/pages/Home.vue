@@ -338,15 +338,6 @@
         const url = this.config.logo || '/static/images/logo.png'
         return `url(${url})`
       },
-      lowerPriority () {
-        let priority = this.priorities[0]
-        this.priorities.forEach(p => {
-          if (p.peso < priority.peso) {
-            priority = p
-          }
-        })
-        return priority
-      },
       higherPriority () {
         let priority = this.priorities[0]
         this.priorities.forEach(p => {
@@ -419,9 +410,6 @@
         const data = {
           unityId: this.config.unity,
           serviceId: this.servicoUnidade.servico.id,
-          // priorityId: (priority ? priority.id : this.lowerPriority.id),
-          // priorityId: priority ? priority.id : (this.normalPriority ? this.normalPriority.id : null),
-          // priorityId: priority ? priority.id : (this.normalPriority ? this.normalPriority.id : this.lowerPriority.id),
           priorityId: (priority ? priority.id : this.normalPriority.id),
           customer: this.customer
         }
