@@ -106,12 +106,12 @@
           </ul>
         </div>
         <div class="columns is-multiline is-mobile">
-          <div class="column is-6">
+          <div :class="columnClasses()">
             <button type="button" class="button is-xlarge is-block" :style="{'color': config.buttonNormalFontColor,'background-color': config.buttonNormalBgColor}" :disabled="busy" @click="ticket(null)">
               {{ 'home.btn.normal'|trans }}
             </button>
           </div>
-          <div class="column is-6">
+          <div :class="columnClasses()">
             <button type="button" class="button is-xlarge is-block" :style="{'color': config.buttonPriorityFontColor,'background-color': config.buttonPriorityBgColor}" :disabled="busy" @click="selectPriority">
               {{ 'home.btn.priority'|trans }}
             </button>
@@ -143,8 +143,8 @@
       </header>
       <section>
         <div class="columns is-multiline is-mobile">
-          <div class="column is-6" v-for="priority in priorities" :key="priority.id">
-            <button type="button" class="button is-danger is-xlarge is-block" :disabled="busy" @click="ticket(priority)">
+          <div :class="columnClasses()" v-for="priority in priorities" :key="priority.id">
+            <button type="button" class="button is-danger is-xlarge is-block" :disabled="busy" @click="ticket(priority)" :style="'background-color: ' + priority.cor">
               {{priority.nome}}
             </button>
           </div>
@@ -206,7 +206,6 @@
 <script>
   import auth from '@/store/modules/auth'
   import axios from 'axios'
-  import socketIO from 'socket.io-client/dist/socket.io'
   import { log } from '@/util/functions'
 
   let remote = null
@@ -214,66 +213,12 @@
     remote = require('electron').remote
   }
   
-  let socket = null
   let running = false
   let intervalId = 0
   let timeoutId = 0
 
   function isExpired ($store) {
     return auth.getters.isExpired($store.state.auth)
-  }
-
-  function doConnect ($root, $store) {
-    const tokens = $store.state.config.server.split('//')
-    const schema = tokens[0]
-    const host = tokens[1].split('/')[0].split(':')[0]
-    const port = 2020
-    const url = `${schema}//${host}:${port}`
-
-    log('[websocket] trying connect to websocket server: ' + url)
-
-    socket = socketIO(url, {
-      path: '/socket.io',
-      transports: ['websocket'],
-      secure: true,
-      timeout: 2000,
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: 3
-    })
-
-    socket.on('connect', () => {
-      log('[websocket] connected')
-      socket.emit('register triage', {
-        unity: $store.state.config.unity
-      })
-    })
-
-    socket.on('disconnect', () => {
-      log('[websocket] disconnected!')
-    })
-  
-    socket.on('connect_error', (evt) => {
-      log('[websocket] connect error', evt)
-    })
-
-    socket.on('connect_timeout', () => {
-      log('[websocket] timeout')
-    })
-  
-    socket.on('reconnect_failed', () => {
-      log('[websocket] max attempts reached, ajax polling fallback')
-      socket.open()
-    })
-  
-    socket.on('error', (evt) => {
-      log('[websocket] error', evt)
-    })
-
-    socket.on('register ok', () => {
-      log('[websocket] triage registered')
-    })
   }
 
   function connect ($root, $store) {
@@ -288,19 +233,10 @@
 
       $store.dispatch('token').then(() => {
         log('token refreshed successfully!')
-        doConnect($root, $store)
       }, () => {
         log('error on refresh token. go to settings!')
         $root.$router.push('/settings')
       })
-    } else {
-      doConnect($root, $store)
-    }
-  }
-
-  function disconnect () {
-    if (socket) {
-      socket.close()
     }
   }
 
@@ -383,6 +319,7 @@
         departmentServices: [],
         subservices: [],
         priorities: [],
+        normalPriority: null,
         customer: {
           id: '',
           name: ''
@@ -400,6 +337,15 @@
       logoUrl () {
         const url = this.config.logo || '/static/images/logo.png'
         return `url(${url})`
+      },
+      higherPriority () {
+        let priority = this.priorities[0]
+        this.priorities.forEach(p => {
+          if (p.peso > priority.peso) {
+            priority = p
+          }
+        })
+        return priority
       }
     },
     methods: {
@@ -435,11 +381,18 @@
 
       selectService (su) {
         this.servicoUnidade = su
-        if (!su.prioridade || this.priorities.length === 0) {
+        // somente normal ou prioridades vazias (imprime direto)
+        if (su.tipo === 2 || this.priorities.length === 0) {
           this.ticket(null)
-        } else {
-          this.page = 'service'
+          return
         }
+        // somente prioridade, e apenas 1 prioridade (imprime direto)
+        if (su.tipo === 3 && this.priorities.length === 1) {
+          this.ticket(this.priorities[0])
+          return
+        }
+        // exibe tela para escolha da prioridade
+        this.page = 'service'
       },
 
       selectPriority () {
@@ -457,7 +410,7 @@
         const data = {
           unityId: this.config.unity,
           serviceId: this.servicoUnidade.servico.id,
-          priorityId: (priority ? priority.id : 1),
+          priorityId: (priority ? priority.id : this.normalPriority.id),
           customer: this.customer
         }
         if (this.config.preTicketWebHook) {
@@ -467,15 +420,13 @@
           .then(() => {
             this.$store.dispatch('newTicket', data)
               .then((ticket) => {
-                socket.emit('new ticket', {
-                  unity: data.unityId
-                })
                 this.print(ticket)
                 if (this.config.postTicketWebHook) {
                   axios.request(this.config.postTicketWebHook, { method: 'post', data: ticket })
                 }
                 this.busy = false
-              }, () => {
+              }, error => {
+                this.$swal('Oops!', error, 'error')
                 this.busy = false
               })
           }, (e) => {
@@ -547,9 +498,8 @@
         let promises = []
 
         promise = this.$store.dispatch('fetchPriorities', this.config.unity).then((priorities) => {
-          this.priorities = priorities.filter((p) => {
-            return p.peso > 0
-          })
+          this.priorities = priorities.filter((p) => p.peso > 0)
+          this.normalPriority = priorities.find((p) => p.peso === 0)
         })
         promises.push(promise)
 
@@ -634,7 +584,6 @@
     },
     beforeDestroy () {
       running = false
-      disconnect()
       clearInterval(intervalId)
       clearTimeout(timeoutId)
       document.removeEventListener('keydown', this.unlockMenuListener)
@@ -675,17 +624,17 @@
     left: 0
     position: fixed
     header
-      padding: 1.5rem 2rem
+      padding: 1vh 2vh
       h1
         color: #ffffff
         font-size: 3rem
         font-weight: bold
-        padding: .5rem 0
+        padding: 1vh
         text-align: center
         background-repeat: no-repeat
         background-size: contain
     section
-      padding: 2rem
+      padding: 1vw
       p
         text-align: center
         font-size: 1.5rem
@@ -699,7 +648,7 @@
             font-size: 2.5rem
     footer
       width: 100%
-      padding: 2rem
+      padding: 2vh
       position: fixed
       bottom: 0
     .is-block

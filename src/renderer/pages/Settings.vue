@@ -1,7 +1,7 @@
 <template>
-  <div class="container">
-    <div class="columns">
-      <div class="column is-2-desktop is-3-tablet is-3-mobile column-menu">
+  <div class="container settings">
+    <div class="columns is-mobile">
+      <div class="column is-2-desktop is-3-tablet is-3-mobile">
         <aside class="menu">
           <img src="static/images/logo.png">
 
@@ -47,7 +47,7 @@
           </ul>
         </aside>
       </div>
-      <div class="column">
+      <div class="column is-10-desktop is-9-tablet is-9-mobile">
         <div class="heading">
           <h1 class="title">
             {{ 'settings.title'|trans }}
@@ -439,7 +439,7 @@
               {{ 'settings.label.unity'|trans }}
             </label>
             <div class="control">
-              <div class="select">
+              <div class="select is-fullwidth">
                 <select v-model="config.unity" @change="changeUnity">
                   <option></option>
                   <option v-for="unity in unities" :value="unity.id" :key="unity.id">
@@ -750,7 +750,12 @@
           for (let c of current) {
             for (let s of this.services) {
               if (s.servico.id === c.servicoUnidade.servico.id) {
-                this.config.services.push(c)
+                this.config.services.push({
+                  enabled: c.enabled,
+                  servicoUnidade: s,
+                  buttonColor: c.buttonColor,
+                  fontColor: c.fontColor
+                })
                 services.splice(services.indexOf(s), 1)
                 break
               }
@@ -776,7 +781,12 @@
           for (let c of current) {
             for (let d of this.activeDepartments) {
               if (d.id === c.department.id) {
-                this.config.departments.push(c)
+                this.config.departments.push({
+                  enabled: c.enabled,
+                  department: d,
+                  bgColor: c.bgColor,
+                  fontColor: c.fontColor
+                })
                 departments.splice(departments.indexOf(d), 1)
                 break
               }
@@ -827,9 +837,11 @@
 </script>
 
   <style lang="sass">
-    aside
-      img
-        height: 60px
-    .columns .column
-      padding: 2rem
+    settings
+      aside
+        img
+          width: 100%
+          max-height: 60px
+      .columns .column
+        padding: 2rem
   </style>

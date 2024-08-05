@@ -23,8 +23,12 @@ class Client {
           let message = error.message
           if (error.response) {
             message = error.response.statusText
-            if (error.response.data && error.response.data.error_description) {
-              message += ': ' + error.response.data.error_description
+            if (error.response.data) {
+              if (error.response.data.error_description) {
+                message = error.response.data.error_description
+              } else if (error.response.data.error) {
+                message = error.response.data.error
+              }
             }
           }
           reject(message)
