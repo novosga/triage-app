@@ -319,6 +319,7 @@
         departmentServices: [],
         subservices: [],
         priorities: [],
+        normalPriority: null,
         customer: {
           id: '',
           name: ''
@@ -336,15 +337,6 @@
       logoUrl () {
         const url = this.config.logo || '/static/images/logo.png'
         return `url(${url})`
-      },
-      lowerPriority () {
-        let priority = this.priorities[0]
-        this.priorities.forEach(p => {
-          if (p.peso < priority.peso) {
-            priority = p
-          }
-        })
-        return priority
       },
       higherPriority () {
         let priority = this.priorities[0]
@@ -418,7 +410,7 @@
         const data = {
           unityId: this.config.unity,
           serviceId: this.servicoUnidade.servico.id,
-          priorityId: (priority ? priority.id : this.lowerPriority.id),
+          priorityId: (priority ? priority.id : this.normalPriority.id),
           customer: this.customer
         }
         if (this.config.preTicketWebHook) {
@@ -506,9 +498,8 @@
         let promises = []
 
         promise = this.$store.dispatch('fetchPriorities', this.config.unity).then((priorities) => {
-          this.priorities = priorities.filter((p) => {
-            return p.peso > 0
-          })
+          this.priorities = priorities.filter((p) => p.peso > 0)
+          this.normalPriority = priorities.find((p) => p.peso === 0)
         })
         promises.push(promise)
 
