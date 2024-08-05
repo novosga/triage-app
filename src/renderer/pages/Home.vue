@@ -319,6 +319,7 @@
         departmentServices: [],
         subservices: [],
         priorities: [],
+        normalPriority: null,
         customer: {
           id: '',
           name: ''
@@ -418,7 +419,10 @@
         const data = {
           unityId: this.config.unity,
           serviceId: this.servicoUnidade.servico.id,
-          priorityId: (priority ? priority.id : this.lowerPriority.id),
+          // priorityId: (priority ? priority.id : this.lowerPriority.id),
+          // priorityId: priority ? priority.id : (this.normalPriority ? this.normalPriority.id : null),
+          // priorityId: priority ? priority.id : (this.normalPriority ? this.normalPriority.id : this.lowerPriority.id),
+          priorityId: (priority ? priority.id : this.normalPriority.id),
           customer: this.customer
         }
         if (this.config.preTicketWebHook) {
@@ -506,9 +510,8 @@
         let promises = []
 
         promise = this.$store.dispatch('fetchPriorities', this.config.unity).then((priorities) => {
-          this.priorities = priorities.filter((p) => {
-            return p.peso > 0
-          })
+          this.priorities = priorities.filter((p) => p.peso > 0)
+          this.normalPriority = priorities.find((p) => p.peso === 0)
         })
         promises.push(promise)
 
